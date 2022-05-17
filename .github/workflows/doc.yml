@@ -2,27 +2,7 @@ name: Docs
 
 on:
   workflow_dispatch:
-  #push:
-  #  branches:
-  #  - 'main'
-  #  - '3.11'
-  #  - '3.10'
-  #  - '3.9'
-  #  - '3.8'
-  #  - '3.7'
-  #  paths:
-  #  - 'Doc/**'
-  pull_request:
-    branches:
-    - 'main'
-    - '3.11'
-    - '3.10'
-    - '3.9'
-    - '3.8'
-    - '3.7'
-    paths:
-    - 'Doc/**'
-    - 'Misc/**'
+  push:
 
 jobs:
   build_doc:
@@ -30,27 +10,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Register Sphinx problem matcher
-      run: echo "::add-matcher::.github/problem-matchers/sphinx.json"
-    - name: 'Install Dependencies'
-      run: sudo ./.github/workflows/posix-deps-apt.sh && sudo apt-get install wamerican
-    - name: 'Configure CPython'
-      run: ./configure --with-pydebug
-    - name: 'Build CPython'
-      run: make -j4
-    - name: 'Install build dependencies'
-      run: make -C Doc/ PYTHON=../python venv
-    # Run "check doctest html" as 3 steps to get a more readable output
-    # in the web UI
-    - name: 'Check documentation'
-      run: make -C Doc/ PYTHON=../python SPHINXOPTS="-q -W --keep-going" check
-    # Use "xvfb-run" since some doctest tests open GUI windows
-    - name: 'Run documentation doctest'
-      run: xvfb-run make -C Doc/ PYTHON=../python SPHINXOPTS="-q -W --keep-going" doctest
-    - name: 'Build HTML documentation'
-      run: make -C Doc/ PYTHON=../python SPHINXOPTS="-q -W --keep-going" html
-    - name: 'Upload'
-      uses: actions/upload-artifact@v3
+    - uses: actions/setup-python@v3
       with:
-        name: doc-html
-        path: Doc/build/html
+        python-version: 3.11-dev
+    - name: 'Install build dependencies'
+      run: make -C Doc/ venv
+    - name: 'Build HTML documentation'
+      run: make -C Doc/ SPHINXOPTS="--keep-going" html
+    - name: 'Remove doctrees'  # remove the .doctrees folder to save disk space
+      run: rm -r Doc/build/doctrees/
+    - name: 'Deploy to GitHub pages'
+      uses: JamesIves/github-pages-deploy-action@v4.2.2
+      with:
+        branch: gh-pages
+        folder: Doc/build/html
+        single-commit: true

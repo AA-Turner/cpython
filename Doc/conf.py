@@ -13,7 +13,7 @@ sys.path.append(os.path.abspath('includes'))
 # General configuration
 # ---------------------
 
-extensions = ['sphinx.ext.coverage', 'sphinx.ext.doctest',
+extensions = ['sphinx.ext.coverage', 'sphinx.ext.doctest', 'sphinx.ext.githubpages',
               'pyspecific', 'c_annotations', 'escape4chm',
               'asdl_highlight', 'peg_highlight', 'glossary_search']
 

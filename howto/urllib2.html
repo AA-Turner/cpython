@@ -1,0 +1,1464 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="author" title="About these documents" href="../about.html" /><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="copyright" title="Copyright" href="../copyright.html" /><link rel="next" title="Argparse Tutorial" href="argparse.html" /><link rel="prev" title="Unicode HOWTO" href="unicode.html" />
+
+    <meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
+        <title>HOWTO Fetch Internet Resources Using The urllib Package - Python 3.12.0a0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../contents.html"><div class="brand">Python 3.12.0a0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../contents.html">
+  
+  
+  <span class="sidebar-brand-text">Python 3.12.0a0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../whatsnew/index.html">What’s New in Python</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/3.12.html">What’s New In Python 3.12</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/3.11.html">What’s New In Python 3.11</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/3.10.html">What’s New In Python 3.10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/3.9.html">What’s New In Python 3.9</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/3.8.html">What’s New In Python 3.8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/3.7.html">What’s New In Python 3.7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/3.6.html">What’s New In Python 3.6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/3.5.html">What’s New In Python 3.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/3.4.html">What’s New In Python 3.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/3.3.html">What’s New In Python 3.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/3.2.html">What’s New In Python 3.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/3.1.html">What’s New In Python 3.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/3.0.html">What’s New In Python 3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/2.7.html">What’s New in Python 2.7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/2.6.html">What’s New in Python 2.6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/2.5.html">What’s New in Python 2.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/2.4.html">What’s New in Python 2.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/2.3.html">What’s New in Python 2.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/2.2.html">What’s New in Python 2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/2.1.html">What’s New in Python 2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/2.0.html">What’s New in Python 2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whatsnew/changelog.html">Changelog</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/index.html">The Python Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/appetite.html">1. Whetting Your Appetite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/interpreter.html">2. Using the Python Interpreter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/introduction.html">3. An Informal Introduction to Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/controlflow.html">4. More Control Flow Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/datastructures.html">5. Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/modules.html">6. Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/inputoutput.html">7. Input and Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/errors.html">8. Errors and Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/classes.html">9. Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/stdlib.html">10. Brief Tour of the Standard Library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/stdlib2.html">11. Brief Tour of the Standard Library — Part II</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/venv.html">12. Virtual Environments and Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/whatnow.html">13. What Now?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/interactive.html">14. Interactive Input Editing and History Substitution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/floatingpoint.html">15. Floating Point Arithmetic:  Issues and Limitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/appendix.html">16. Appendix</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../using/index.html">Python Setup and Usage</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../using/cmdline.html">1. Command line and environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../using/unix.html">2. Using Python on Unix platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../using/configure.html">3. Configure Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../using/windows.html">4. Using Python on Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../using/mac.html">5. Using Python on a Mac</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../using/editors.html">6. Editors and IDEs</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">The Python Language Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/introduction.html">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/lexical_analysis.html">2. Lexical analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/datamodel.html">3. Data model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/executionmodel.html">4. Execution model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/import.html">5. The import system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/expressions.html">6. Expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/simple_stmts.html">7. Simple statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/compound_stmts.html">8. Compound statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/toplevel_components.html">9. Top-level components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/grammar.html">10. Full Grammar specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../library/index.html">The Python Standard Library</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../library/intro.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../library/functions.html">Built-in Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../library/constants.html">Built-in Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../library/stdtypes.html">Built-in Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../library/exceptions.html">Built-in Exceptions</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/text.html">Text Processing Services</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/string.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">string</span></code> — Common string operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/re.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">re</span></code> — Regular expression operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/difflib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">difflib</span></code> — Helpers for computing deltas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/textwrap.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">textwrap</span></code> — Text wrapping and filling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/unicodedata.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">unicodedata</span></code> — Unicode Database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/stringprep.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">stringprep</span></code> — Internet String Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/readline.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">readline</span></code> — GNU readline interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/rlcompleter.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">rlcompleter</span></code> — Completion function for GNU readline</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/binary.html">Binary Data Services</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/struct.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">struct</span></code> — Interpret bytes as packed binary data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/codecs.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">codecs</span></code> — Codec registry and base classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/datatypes.html">Data Types</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/datetime.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">datetime</span></code> — Basic date and time types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/zoneinfo.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">zoneinfo</span></code> — IANA time zone support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/calendar.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">calendar</span></code> — General calendar-related functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/collections.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">collections</span></code> — Container datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/collections.abc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">collections.abc</span></code> — Abstract Base Classes for Containers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/heapq.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">heapq</span></code> — Heap queue algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/bisect.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bisect</span></code> — Array bisection algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/array.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">array</span></code> — Efficient arrays of numeric values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/weakref.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">weakref</span></code> — Weak references</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/types.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">types</span></code> — Dynamic type creation and names for built-in types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/copy.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">copy</span></code> — Shallow and deep copy operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/pprint.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pprint</span></code> — Data pretty printer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/reprlib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">reprlib</span></code> — Alternate <code class="xref py py-func docutils literal notranslate"><span class="pre">repr()</span></code> implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/enum.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">enum</span></code> — Support for enumerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/graphlib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">graphlib</span></code> — Functionality to operate with graph-like structures</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/numeric.html">Numeric and Mathematical Modules</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/numbers.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numbers</span></code> — Numeric abstract base classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/math.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">math</span></code> — Mathematical functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/cmath.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cmath</span></code> — Mathematical functions for complex numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/decimal.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">decimal</span></code> — Decimal fixed point and floating point arithmetic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/fractions.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fractions</span></code> — Rational numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/random.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">random</span></code> — Generate pseudo-random numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/statistics.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">statistics</span></code> — Mathematical statistics functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/functional.html">Functional Programming Modules</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/itertools.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">itertools</span></code> — Functions creating iterators for efficient looping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/functools.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">functools</span></code> — Higher-order functions and operations on callable objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/operator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">operator</span></code> — Standard operators as functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/filesys.html">File and Directory Access</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/pathlib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pathlib</span></code> — Object-oriented filesystem paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/os.path.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">os.path</span></code> — Common pathname manipulations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/fileinput.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fileinput</span></code> — Iterate over lines from multiple input streams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/stat.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">stat</span></code> — Interpreting <code class="xref py py-func docutils literal notranslate"><span class="pre">stat()</span></code> results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/filecmp.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">filecmp</span></code> — File and Directory Comparisons</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/tempfile.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tempfile</span></code> — Generate temporary files and directories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/glob.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">glob</span></code> — Unix style pathname pattern expansion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/fnmatch.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fnmatch</span></code> — Unix filename pattern matching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/linecache.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">linecache</span></code> — Random access to text lines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/shutil.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">shutil</span></code> — High-level file operations</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/persistence.html">Data Persistence</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/pickle.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pickle</span></code> — Python object serialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/copyreg.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">copyreg</span></code> — Register <code class="xref py py-mod docutils literal notranslate"><span class="pre">pickle</span></code> support functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/shelve.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">shelve</span></code> — Python object persistence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/marshal.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">marshal</span></code> — Internal Python object serialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/dbm.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dbm</span></code> — Interfaces to Unix “databases”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/sqlite3.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sqlite3</span></code> — DB-API 2.0 interface for SQLite databases</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/archiving.html">Data Compression and Archiving</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/zlib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">zlib</span></code> — Compression compatible with <strong class="program">gzip</strong></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/gzip.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gzip</span></code> — Support for <strong class="program">gzip</strong> files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/bz2.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bz2</span></code> — Support for <strong class="program">bzip2</strong> compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/lzma.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lzma</span></code> — Compression using the LZMA algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/zipfile.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">zipfile</span></code> — Work with ZIP archives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/tarfile.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tarfile</span></code> — Read and write tar archive files</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/fileformats.html">File Formats</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/csv.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">csv</span></code> — CSV File Reading and Writing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/configparser.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">configparser</span></code> — Configuration file parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/tomllib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tomllib</span></code> — Parse TOML files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/netrc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">netrc</span></code> — netrc file processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/plistlib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">plistlib</span></code> — Generate and parse Apple <code class="docutils literal notranslate"><span class="pre">.plist</span></code> files</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/crypto.html">Cryptographic Services</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/hashlib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">hashlib</span></code> — Secure hashes and message digests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/hmac.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">hmac</span></code> — Keyed-Hashing for Message Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/secrets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">secrets</span></code> — Generate secure random numbers for managing secrets</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/allos.html">Generic Operating System Services</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/os.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">os</span></code> — Miscellaneous operating system interfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/io.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">io</span></code> — Core tools for working with streams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/time.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">time</span></code> — Time access and conversions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/argparse.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">argparse</span></code> — Parser for command-line options, arguments and sub-commands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/getopt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">getopt</span></code> — C-style parser for command line options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/logging.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">logging</span></code> — Logging facility for Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/logging.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">logging.config</span></code> — Logging configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/logging.handlers.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">logging.handlers</span></code> — Logging handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/getpass.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">getpass</span></code> — Portable password input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/curses.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">curses</span></code> — Terminal handling for character-cell displays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/curses.html#module-curses.textpad"><code class="xref py py-mod docutils literal notranslate"><span class="pre">curses.textpad</span></code> — Text input widget for curses programs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/curses.ascii.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">curses.ascii</span></code> — Utilities for ASCII characters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/curses.panel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">curses.panel</span></code> — A panel stack extension for curses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/platform.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">platform</span></code> —  Access to underlying platform’s identifying data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/errno.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">errno</span></code> — Standard errno system symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/ctypes.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ctypes</span></code> — A foreign function library for Python</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/concurrency.html">Concurrent Execution</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/threading.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">threading</span></code> — Thread-based parallelism</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/multiprocessing.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">multiprocessing</span></code> — Process-based parallelism</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/multiprocessing.shared_memory.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">multiprocessing.shared_memory</span></code> —  Provides shared memory for direct access across processes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/concurrent.html">The <code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent</span></code> package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/concurrent.futures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code> — Launching parallel tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/subprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">subprocess</span></code> — Subprocess management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/sched.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sched</span></code> — Event scheduler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/queue.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">queue</span></code> — A synchronized queue class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/contextvars.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">contextvars</span></code> — Context Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/_thread.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">_thread</span></code> — Low-level threading API</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/ipc.html">Networking and Interprocess Communication</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../library/asyncio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncio</span></code> — Asynchronous I/O</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-runner.html">Runners</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-task.html">Coroutines and Tasks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-stream.html">Streams</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-sync.html">Synchronization Primitives</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-subprocess.html">Subprocesses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-queue.html">Queues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-exceptions.html">Exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-eventloop.html">Event Loop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-future.html">Futures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-protocol.html">Transports and Protocols</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-policy.html">Policies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-platforms.html">Platform Support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-extending.html">Extending</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-api-index.html">High-level API Index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-llapi-index.html">Low-level API Index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/asyncio-dev.html">Developing with asyncio</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../library/socket.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">socket</span></code> — Low-level networking interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/ssl.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ssl</span></code> — TLS/SSL wrapper for socket objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/select.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">select</span></code> — Waiting for I/O completion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/selectors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code> — High-level I/O multiplexing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/signal.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">signal</span></code> — Set handlers for asynchronous events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/mmap.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mmap</span></code> — Memory-mapped file support</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/netdata.html">Internet Data Handling</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../library/email.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email</span></code> — An email and MIME handling package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.message.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email.message</span></code>: Representing an email message</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.parser.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email.parser</span></code>: Parsing email messages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.generator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email.generator</span></code>: Generating MIME documents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.policy.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email.policy</span></code>: Policy Objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.errors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email.errors</span></code>: Exception and Defect classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.headerregistry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email.headerregistry</span></code>: Custom Header Objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.contentmanager.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email.contentmanager</span></code>: Managing MIME Content</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.examples.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email</span></code>: Examples</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.compat32-message.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email.message.Message</span></code>: Representing an email message using the <code class="xref py py-data docutils literal notranslate"><span class="pre">compat32</span></code> API</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.mime.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email.mime</span></code>: Creating email and MIME objects from scratch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.header.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email.header</span></code>: Internationalized headers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.charset.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email.charset</span></code>: Representing character sets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.encoders.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email.encoders</span></code>: Encoders</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email.utils</span></code>: Miscellaneous utilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../library/email.iterators.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">email.iterators</span></code>: Iterators</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../library/json.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code> — JSON encoder and decoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/mailbox.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mailbox</span></code> — Manipulate mailboxes in various formats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/mimetypes.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mimetypes</span></code> — Map filenames to MIME types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/base64.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">base64</span></code> — Base16, Base32, Base64, Base85 Data Encodings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/binascii.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">binascii</span></code> — Convert between binary and ASCII</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/quopri.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">quopri</span></code> — Encode and decode MIME quoted-printable data</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/markup.html">Structured Markup Processing Tools</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/html.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">html</span></code> — HyperText Markup Language support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/html.parser.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">html.parser</span></code> — Simple HTML and XHTML parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/html.entities.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">html.entities</span></code> — Definitions of HTML general entities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/xml.html">XML Processing Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/xml.etree.elementtree.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">xml.etree.ElementTree</span></code> — The ElementTree XML API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/xml.dom.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">xml.dom</span></code> — The Document Object Model API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/xml.dom.minidom.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">xml.dom.minidom</span></code> — Minimal DOM implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/xml.dom.pulldom.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">xml.dom.pulldom</span></code> — Support for building partial DOM trees</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/xml.sax.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">xml.sax</span></code> — Support for SAX2 parsers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/xml.sax.handler.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">xml.sax.handler</span></code> — Base classes for SAX handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/xml.sax.utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">xml.sax.saxutils</span></code> — SAX Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/xml.sax.reader.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">xml.sax.xmlreader</span></code> — Interface for XML parsers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/pyexpat.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">xml.parsers.expat</span></code> — Fast XML parsing using Expat</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/internet.html">Internet Protocols and Support</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/webbrowser.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">webbrowser</span></code> — Convenient web-browser controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/wsgiref.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wsgiref</span></code> — WSGI Utilities and Reference Implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/urllib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">urllib</span></code> — URL handling modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/urllib.request.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">urllib.request</span></code> — Extensible library for opening URLs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/urllib.request.html#module-urllib.response"><code class="xref py py-mod docutils literal notranslate"><span class="pre">urllib.response</span></code> — Response classes used by urllib</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/urllib.parse.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">urllib.parse</span></code> — Parse URLs into components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/urllib.error.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">urllib.error</span></code> — Exception classes raised by urllib.request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/urllib.robotparser.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">urllib.robotparser</span></code> —  Parser for robots.txt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/http.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">http</span></code> — HTTP modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/http.client.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">http.client</span></code> — HTTP protocol client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/ftplib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ftplib</span></code> — FTP protocol client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/poplib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">poplib</span></code> — POP3 protocol client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/imaplib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">imaplib</span></code> — IMAP4 protocol client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/smtplib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">smtplib</span></code> — SMTP protocol client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/uuid.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">uuid</span></code> — UUID objects according to <strong>RFC 4122</strong></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/socketserver.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">socketserver</span></code> — A framework for network servers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/http.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">http.server</span></code> — HTTP servers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/http.cookies.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">http.cookies</span></code> — HTTP state management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/http.cookiejar.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">http.cookiejar</span></code> — Cookie handling for HTTP clients</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/xmlrpc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">xmlrpc</span></code> — XMLRPC server and client modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/xmlrpc.client.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">xmlrpc.client</span></code> — XML-RPC client access</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/xmlrpc.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">xmlrpc.server</span></code> — Basic XML-RPC servers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/ipaddress.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ipaddress</span></code> — IPv4/IPv6 manipulation library</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/mm.html">Multimedia Services</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/wave.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wave</span></code> — Read and write WAV files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/colorsys.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">colorsys</span></code> — Conversions between color systems</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/i18n.html">Internationalization</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/gettext.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gettext</span></code> — Multilingual internationalization services</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/locale.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">locale</span></code> — Internationalization services</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/frameworks.html">Program Frameworks</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/turtle.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">turtle</span></code> — Turtle graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/cmd.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cmd</span></code> — Support for line-oriented command interpreters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/shlex.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">shlex</span></code> — Simple lexical analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/tk.html">Graphical User Interfaces with Tk</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/tkinter.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tkinter</span></code> — Python interface to Tcl/Tk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/tkinter.colorchooser.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tkinter.colorchooser</span></code> — Color choosing dialog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/tkinter.font.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tkinter.font</span></code> — Tkinter font wrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/dialog.html">Tkinter Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/tkinter.messagebox.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tkinter.messagebox</span></code> — Tkinter message prompts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/tkinter.scrolledtext.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tkinter.scrolledtext</span></code> — Scrolled Text Widget</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/tkinter.dnd.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tkinter.dnd</span></code> — Drag and drop support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/tkinter.ttk.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tkinter.ttk</span></code> — Tk themed widgets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/tkinter.tix.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tkinter.tix</span></code> — Extension widgets for Tk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/idle.html">IDLE</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/development.html">Development Tools</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/typing.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code> — Support for type hints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/pydoc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pydoc</span></code> — Documentation generator and online help system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/devmode.html">Python Development Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/devmode.html#effects-of-the-python-development-mode">Effects of the Python Development Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/devmode.html#resourcewarning-example">ResourceWarning Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/devmode.html#bad-file-descriptor-error-example">Bad file descriptor error example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/doctest.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">doctest</span></code> — Test interactive Python examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/unittest.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">unittest</span></code> — Unit testing framework</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/unittest.mock.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">unittest.mock</span></code> — mock object library</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/unittest.mock-examples.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">unittest.mock</span></code> — getting started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/2to3.html">2to3 - Automated Python 2 to 3 code translation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">test</span></code> — Regression tests package for Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/test.html#module-test.support"><code class="xref py py-mod docutils literal notranslate"><span class="pre">test.support</span></code> — Utilities for the Python test suite</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/test.html#module-test.support.socket_helper"><code class="xref py py-mod docutils literal notranslate"><span class="pre">test.support.socket_helper</span></code> — Utilities for socket tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/test.html#module-test.support.script_helper"><code class="xref py py-mod docutils literal notranslate"><span class="pre">test.support.script_helper</span></code> — Utilities for the Python execution tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/test.html#module-test.support.bytecode_helper"><code class="xref py py-mod docutils literal notranslate"><span class="pre">test.support.bytecode_helper</span></code> — Support tools for testing correct bytecode generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/test.html#module-test.support.threading_helper"><code class="xref py py-mod docutils literal notranslate"><span class="pre">test.support.threading_helper</span></code> — Utilities for threading tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/test.html#module-test.support.os_helper"><code class="xref py py-mod docutils literal notranslate"><span class="pre">test.support.os_helper</span></code> — Utilities for os tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/test.html#module-test.support.import_helper"><code class="xref py py-mod docutils literal notranslate"><span class="pre">test.support.import_helper</span></code> — Utilities for import tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/test.html#module-test.support.warnings_helper"><code class="xref py py-mod docutils literal notranslate"><span class="pre">test.support.warnings_helper</span></code> — Utilities for warnings tests</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/debug.html">Debugging and Profiling</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/audit_events.html">Audit events table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/bdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bdb</span></code> — Debugger framework</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/faulthandler.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">faulthandler</span></code> — Dump the Python traceback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/pdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pdb</span></code> — The Python Debugger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/profile.html">The Python Profilers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/timeit.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">timeit</span></code> — Measure execution time of small code snippets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/trace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trace</span></code> — Trace or track Python statement execution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/tracemalloc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tracemalloc</span></code> — Trace memory allocations</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/distribution.html">Software Packaging and Distribution</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/distutils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">distutils</span></code> — Building and installing Python modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/ensurepip.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ensurepip</span></code> — Bootstrapping the <code class="docutils literal notranslate"><span class="pre">pip</span></code> installer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/venv.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">venv</span></code> — Creation of virtual environments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/zipapp.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">zipapp</span></code> — Manage executable Python zip archives</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/python.html">Python Runtime Services</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/sys.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sys</span></code> — System-specific parameters and functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/sysconfig.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sysconfig</span></code> — Provide access to Python’s configuration information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/builtins.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">builtins</span></code> — Built-in objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/__main__.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">__main__</span></code> — Top-level code environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/warnings.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">warnings</span></code> — Warning control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/dataclasses.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dataclasses</span></code> — Data Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/contextlib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">contextlib</span></code> — Utilities for <code class="xref std std-keyword docutils literal notranslate"><span class="pre">with</span></code>-statement contexts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/abc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">abc</span></code> — Abstract Base Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/atexit.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">atexit</span></code> — Exit handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/traceback.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">traceback</span></code> — Print or retrieve a stack traceback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/__future__.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">__future__</span></code> — Future statement definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/gc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gc</span></code> — Garbage Collector interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/inspect.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">inspect</span></code> — Inspect live objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/site.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">site</span></code> — Site-specific configuration hook</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/custominterp.html">Custom Python Interpreters</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/code.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">code</span></code> — Interpreter base classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/codeop.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">codeop</span></code> — Compile Python code</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/modules.html">Importing Modules</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/zipimport.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">zipimport</span></code> — Import modules from Zip archives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/pkgutil.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pkgutil</span></code> — Package extension utility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/modulefinder.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">modulefinder</span></code> — Find modules used by a script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/runpy.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">runpy</span></code> — Locating and executing Python modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/importlib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">importlib</span></code> — The implementation of <code class="xref std std-keyword docutils literal notranslate"><span class="pre">import</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/importlib.resources.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">importlib.resources</span></code> – Resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/importlib.metadata.html">Using <code class="xref py py-mod docutils literal notranslate"><span class="pre">importlib.metadata</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/sys_path_init.html">The initialization of the <code class="xref py py-data docutils literal notranslate"><span class="pre">sys.path</span></code> module search path</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/language.html">Python Language Services</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/ast.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ast</span></code> — Abstract Syntax Trees</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/symtable.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">symtable</span></code> — Access to the compiler’s symbol tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/token.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">token</span></code> — Constants used with Python parse trees</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/keyword.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">keyword</span></code> — Testing for Python keywords</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/tokenize.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tokenize</span></code> — Tokenizer for Python source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/tabnanny.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tabnanny</span></code> — Detection of ambiguous indentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/pyclbr.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyclbr</span></code> — Python module browser support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/py_compile.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">py_compile</span></code> — Compile Python source files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/compileall.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">compileall</span></code> — Byte-compile Python libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/dis.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dis</span></code> — Disassembler for Python bytecode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/pickletools.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pickletools</span></code> — Tools for pickle developers</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/windows.html">MS Windows Specific Services</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/msvcrt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">msvcrt</span></code> — Useful routines from the MS VC++ runtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/winreg.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">winreg</span></code> — Windows registry access</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/winsound.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">winsound</span></code> — Sound-playing interface for Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/unix.html">Unix Specific Services</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/posix.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">posix</span></code> — The most common POSIX system calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/pwd.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pwd</span></code> — The password database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/grp.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">grp</span></code> — The group database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/termios.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">termios</span></code> — POSIX style tty control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/tty.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tty</span></code> — Terminal control functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/pty.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pty</span></code> — Pseudo-terminal utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/fcntl.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fcntl</span></code> — The <code class="docutils literal notranslate"><span class="pre">fcntl</span></code> and <code class="docutils literal notranslate"><span class="pre">ioctl</span></code> system calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/resource.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">resource</span></code> — Resource usage information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/syslog.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">syslog</span></code> — Unix syslog library routines</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../library/superseded.html">Superseded Modules</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../library/aifc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">aifc</span></code> — Read and write AIFF and AIFC files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/asynchat.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynchat</span></code> — Asynchronous socket command/response handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/asyncore.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncore</span></code> — Asynchronous socket handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/audioop.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">audioop</span></code> — Manipulate raw audio data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/cgi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cgi</span></code> — Common Gateway Interface support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/cgitb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cgitb</span></code> — Traceback manager for CGI scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/chunk.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">chunk</span></code> — Read IFF chunked data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/crypt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">crypt</span></code> — Function to check Unix passwords</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/imghdr.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">imghdr</span></code> — Determine the type of an image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/imp.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">imp</span></code> — Access the <span class="xref std std-ref">import</span> internals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/mailcap.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mailcap</span></code> — Mailcap file handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/msilib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">msilib</span></code> — Read and write Microsoft Installer files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/nis.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nis</span></code> — Interface to Sun’s NIS (Yellow Pages)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/nntplib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nntplib</span></code> — NNTP protocol client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/optparse.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">optparse</span></code> — Parser for command line options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/ossaudiodev.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ossaudiodev</span></code> — Access to OSS-compatible audio devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/pipes.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pipes</span></code> — Interface to shell pipelines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/smtpd.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">smtpd</span></code> — SMTP Server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/sndhdr.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sndhdr</span></code> — Determine type of sound file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/spwd.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">spwd</span></code> — The shadow password database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/sunau.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sunau</span></code> — Read and write Sun AU files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/telnetlib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">telnetlib</span></code> — Telnet client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/uu.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">uu</span></code> — Encode and decode uuencode files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../library/xdrlib.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">xdrlib</span></code> — Encode and decode XDR data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../library/security_warnings.html">Security Considerations</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../extending/index.html">Extending and Embedding the Python Interpreter</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" role="switch" type="checkbox"/><label for="toctree-checkbox-38"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../extending/extending.html">1. Extending Python with C or C++</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extending/newtypes_tutorial.html">2. Defining Extension Types: Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extending/newtypes.html">3. Defining Extension Types: Assorted Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extending/building.html">4. Building C and C++ Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extending/windows.html">5. Building C and C++ Extensions on Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extending/embedding.html">1. Embedding Python in Another Application</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../c-api/index.html">Python/C API Reference Manual</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" role="switch" type="checkbox"/><label for="toctree-checkbox-39"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../c-api/intro.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../c-api/stable.html">C API Stability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../c-api/veryhigh.html">The Very High Level Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../c-api/refcounting.html">Reference Counting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../c-api/exceptions.html">Exception Handling</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../c-api/utilities.html">Utilities</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/sys.html">Operating System Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/sys.html#system-functions">System Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/sys.html#process-control">Process Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/import.html">Importing Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/marshal.html">Data marshalling support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/arg.html">Parsing arguments and building values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/conversion.html">String conversion and formatting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/reflection.html">Reflection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/codec.html">Codec registry and support functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../c-api/abstract.html">Abstract Objects Layer</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/object.html">Object Protocol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/call.html">Call Protocol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/number.html">Number Protocol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/sequence.html">Sequence Protocol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/mapping.html">Mapping Protocol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/iter.html">Iterator Protocol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/buffer.html">Buffer Protocol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/objbuffer.html">Old Buffer Protocol</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../c-api/concrete.html">Concrete Objects Layer</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/type.html">Type Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/none.html">The <code class="docutils literal notranslate"><span class="pre">None</span></code> Object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/long.html">Integer Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/bool.html">Boolean Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/float.html">Floating Point Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/float.html#pack-functions">Pack functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/float.html#unpack-functions">Unpack functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/complex.html">Complex Number Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/bytes.html">Bytes Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/bytearray.html">Byte Array Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/unicode.html">Unicode Objects and Codecs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/tuple.html">Tuple Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/tuple.html#struct-sequence-objects">Struct Sequence Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/list.html">List Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/dict.html">Dictionary Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/set.html">Set Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/function.html">Function Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/method.html">Instance Method Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/method.html#method-objects">Method Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/cell.html">Cell Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/code.html">Code Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/file.html">File Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/module.html">Module Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/iterator.html">Iterator Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/descriptor.html">Descriptor Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/slice.html">Slice Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/slice.html#ellipsis-object">Ellipsis Object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/memoryview.html">MemoryView objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/weakref.html">Weak Reference Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/capsule.html">Capsules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/frame.html">Frame Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/gen.html">Generator Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/coro.html">Coroutine Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/contextvars.html">Context Variables Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/datetime.html">DateTime Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/typehints.html">Objects for Type Hinting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../c-api/init.html">Initialization, Finalization, and Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../c-api/init_config.html">Python Initialization Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../c-api/memory.html">Memory Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../c-api/objimpl.html">Object Implementation Support</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" role="switch" type="checkbox"/><label for="toctree-checkbox-43"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/allocation.html">Allocating Objects on the Heap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/structures.html">Common Object Structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/typeobj.html">Type Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/typeobj.html#number-object-structures">Number Object Structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/typeobj.html#mapping-object-structures">Mapping Object Structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/typeobj.html#sequence-object-structures">Sequence Object Structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/typeobj.html#buffer-object-structures">Buffer Object Structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/typeobj.html#async-object-structures">Async Object Structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/typeobj.html#slot-type-typedefs">Slot Type typedefs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/typeobj.html#examples">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../c-api/gcsupport.html">Supporting Cyclic Garbage Collection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../c-api/apiabiversion.html">API and ABI Versioning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../distributing/index.html">Distributing Python Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installing/index.html">Installing Python Modules</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Python HOWTOs</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pyporting.html">Porting Python 2 Code to Python 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cporting.html">Porting Extension Modules to Python 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="curses.html">Curses Programming with Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="descriptor.html">Descriptor HowTo Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enum.html">Enum HOWTO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functional.html">Functional Programming HOWTO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging HOWTO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging-cookbook.html">Logging Cookbook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="regex.html">Regular Expression HOWTO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sockets.html">Socket Programming HOWTO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sorting.html">Sorting HOW TO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unicode.html">Unicode HOWTO</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">HOWTO Fetch Internet Resources Using The urllib Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="argparse.html">Argparse Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ipaddress.html">An introduction to the ipaddress module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clinic.html">Argument Clinic How-To</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrumentation.html">Instrumenting CPython with DTrace and SystemTap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html">Annotations Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">Python Frequently Asked Questions</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" role="switch" type="checkbox"/><label for="toctree-checkbox-45"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/general.html">General Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/programming.html">Programming FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/design.html">Design and History FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/library.html">Library and Extension FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/extending.html">Extending/Embedding FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/windows.html">Python on Windows FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/gui.html">Graphic User Interface FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/installed.html">“Why is Python Installed on my Computer?” FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About these documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bugs.html">Dealing with Bugs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../copyright.html">Copyright</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">History and License</a></li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../distutils/index.html">Distributing Python Modules (Legacy version)</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" role="switch" type="checkbox"/><label for="toctree-checkbox-46"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../distutils/introduction.html">1. An Introduction to Distutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../distutils/setupscript.html">2. Writing the Setup Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../distutils/configfile.html">3. Writing the Setup Configuration File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../distutils/sourcedist.html">4. Creating a Source Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../distutils/builtdist.html">5. Creating Built Distributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../distutils/examples.html">6. Distutils Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../distutils/extending.html">7. Extending Distutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../distutils/commandref.html">8. Command Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../distutils/apiref.html">9. API Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installing Python Modules (Legacy version)</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="howto-fetch-internet-resources-using-the-urllib-package">
+<span id="urllib-howto"></span><h1>HOWTO Fetch Internet Resources Using The urllib Package<a class="headerlink" href="#howto-fetch-internet-resources-using-the-urllib-package" title="Permalink to this headline">#</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Author</dt>
+<dd class="field-odd"><p><a class="reference external" href="http://www.voidspace.org.uk/python/index.shtml">Michael Foord</a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There is a French translation of an earlier revision of this
+HOWTO, available at <a class="reference external" href="http://www.voidspace.org.uk/python/articles/urllib2_francais.shtml">urllib2 - Le Manuel manquant</a>.</p>
+</div>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">#</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Related Articles</p>
+<p>You may also find useful the following article on fetching web resources
+with Python:</p>
+<ul>
+<li><p><a class="reference external" href="http://www.voidspace.org.uk/python/articles/authentication.shtml">Basic Authentication</a></p>
+<blockquote>
+<div><p>A tutorial on <em>Basic Authentication</em>, with examples in Python.</p>
+</div></blockquote>
+</li>
+</ul>
+</aside>
+<p><strong>urllib.request</strong> is a Python module for fetching URLs
+(Uniform Resource Locators). It offers a very simple interface, in the form of
+the <em>urlopen</em> function. This is capable of fetching URLs using a variety of
+different protocols. It also offers a slightly more complex interface for
+handling common situations - like basic authentication, cookies, proxies and so
+on. These are provided by objects called handlers and openers.</p>
+<p>urllib.request supports fetching URLs for many “URL schemes” (identified by the string
+before the <code class="docutils literal notranslate"><span class="pre">":"</span></code> in URL - for example <code class="docutils literal notranslate"><span class="pre">"ftp"</span></code> is the URL scheme of
+<code class="docutils literal notranslate"><span class="pre">"ftp://python.org/"</span></code>) using their associated network protocols (e.g. FTP, HTTP).
+This tutorial focuses on the most common case, HTTP.</p>
+<p>For straightforward situations <em>urlopen</em> is very easy to use. But as soon as you
+encounter errors or non-trivial cases when opening HTTP URLs, you will need some
+understanding of the HyperText Transfer Protocol. The most comprehensive and
+authoritative reference to HTTP is <span class="target" id="index-0"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc2616.html"><strong>RFC 2616</strong></a>. This is a technical document and
+not intended to be easy to read. This HOWTO aims to illustrate using <em>urllib</em>,
+with enough detail about HTTP to help you through. It is not intended to replace
+the <a class="reference internal" href="../library/urllib.request.html#module-urllib.request" title="urllib.request: Extensible library for opening URLs."><code class="xref py py-mod docutils literal notranslate"><span class="pre">urllib.request</span></code></a> docs, but is supplementary to them.</p>
+</section>
+<section id="fetching-urls">
+<h2>Fetching URLs<a class="headerlink" href="#fetching-urls" title="Permalink to this headline">#</a></h2>
+<p>The simplest way to use urllib.request is as follows:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">urllib.request</span>
+<span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s1">'http://python.org/'</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+   <span class="n">html</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If you wish to retrieve a resource via URL and store it in a temporary
+location, you can do so via the <a class="reference internal" href="../library/shutil.html#shutil.copyfileobj" title="shutil.copyfileobj"><code class="xref py py-func docutils literal notranslate"><span class="pre">shutil.copyfileobj()</span></code></a> and
+<a class="reference internal" href="../library/tempfile.html#tempfile.NamedTemporaryFile" title="tempfile.NamedTemporaryFile"><code class="xref py py-func docutils literal notranslate"><span class="pre">tempfile.NamedTemporaryFile()</span></code></a> functions:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">urllib.request</span>
+
+<span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s1">'http://python.org/'</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_file</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">tmp_file</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tmp_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">as</span> <span class="n">html</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Many uses of urllib will be that simple (note that instead of an ‘http:’ URL we
+could have used a URL starting with ‘ftp:’, ‘file:’, etc.).  However, it’s the
+purpose of this tutorial to explain the more complicated cases, concentrating on
+HTTP.</p>
+<p>HTTP is based on requests and responses - the client makes requests and servers
+send responses. urllib.request mirrors this with a <code class="docutils literal notranslate"><span class="pre">Request</span></code> object which represents
+the HTTP request you are making. In its simplest form you create a Request
+object that specifies the URL you want to fetch. Calling <code class="docutils literal notranslate"><span class="pre">urlopen</span></code> with this
+Request object returns a response object for the URL requested. This response is
+a file-like object, which means you can for example call <code class="docutils literal notranslate"><span class="pre">.read()</span></code> on the
+response:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">urllib.request</span>
+
+<span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s1">'http://www.voidspace.org.uk'</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+   <span class="n">the_page</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Note that urllib.request makes use of the same Request interface to handle all URL
+schemes.  For example, you can make an FTP request like so:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s1">'ftp://example.com/'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the case of HTTP, there are two extra things that Request objects allow you
+to do: First, you can pass data to be sent to the server.  Second, you can pass
+extra information (“metadata”) <em>about</em> the data or about the request itself, to
+the server - this information is sent as HTTP “headers”.  Let’s look at each of
+these in turn.</p>
+<section id="data">
+<h3>Data<a class="headerlink" href="#data" title="Permalink to this headline">#</a></h3>
+<p>Sometimes you want to send data to a URL (often the URL will refer to a CGI
+(Common Gateway Interface) script or other web application). With HTTP,
+this is often done using what’s known as a <strong>POST</strong> request. This is often what
+your browser does when you submit a HTML form that you filled in on the web. Not
+all POSTs have to come from forms: you can use a POST to transmit arbitrary data
+to your own application. In the common case of HTML forms, the data needs to be
+encoded in a standard way, and then passed to the Request object as the <code class="docutils literal notranslate"><span class="pre">data</span></code>
+argument. The encoding is done using a function from the <a class="reference internal" href="../library/urllib.parse.html#module-urllib.parse" title="urllib.parse: Parse URLs into or assemble them from components."><code class="xref py py-mod docutils literal notranslate"><span class="pre">urllib.parse</span></code></a>
+library.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">urllib.parse</span>
+<span class="kn">import</span> <span class="nn">urllib.request</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s1">'http://www.someserver.com/cgi-bin/register.cgi'</span>
+<span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'name'</span> <span class="p">:</span> <span class="s1">'Michael Foord'</span><span class="p">,</span>
+          <span class="s1">'location'</span> <span class="p">:</span> <span class="s1">'Northampton'</span><span class="p">,</span>
+          <span class="s1">'language'</span> <span class="p">:</span> <span class="s1">'Python'</span> <span class="p">}</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'ascii'</span><span class="p">)</span> <span class="c1"># data should be bytes</span>
+<span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+   <span class="n">the_page</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Note that other encodings are sometimes required (e.g. for file upload from HTML
+forms - see <a class="reference external" href="https://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13">HTML Specification, Form Submission</a> for more
+details).</p>
+<p>If you do not pass the <code class="docutils literal notranslate"><span class="pre">data</span></code> argument, urllib uses a <strong>GET</strong> request. One
+way in which GET and POST requests differ is that POST requests often have
+“side-effects”: they change the state of the system in some way (for example by
+placing an order with the website for a hundredweight of tinned spam to be
+delivered to your door).  Though the HTTP standard makes it clear that POSTs are
+intended to <em>always</em> cause side-effects, and GET requests <em>never</em> to cause
+side-effects, nothing prevents a GET request from having side-effects, nor a
+POST requests from having no side-effects. Data can also be passed in an HTTP
+GET request by encoding it in the URL itself.</p>
+<p>This is done as follows:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">urllib.request</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">urllib.parse</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'Somebody Here'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">[</span><span class="s1">'location'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'Northampton'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">[</span><span class="s1">'language'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'Python'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">url_values</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">url_values</span><span class="p">)</span>  <span class="c1"># The order may differ from below.  </span>
+<span class="go">name=Somebody+Here&amp;language=Python&amp;location=Northampton</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">url</span> <span class="o">=</span> <span class="s1">'http://www.example.com/example.cgi'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">full_url</span> <span class="o">=</span> <span class="n">url</span> <span class="o">+</span> <span class="s1">'?'</span> <span class="o">+</span> <span class="n">url_values</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">full_url</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Notice that the full URL is created by adding a <code class="docutils literal notranslate"><span class="pre">?</span></code> to the URL, followed by
+the encoded values.</p>
+</section>
+<section id="headers">
+<h3>Headers<a class="headerlink" href="#headers" title="Permalink to this headline">#</a></h3>
+<p>We’ll discuss here one particular HTTP header, to illustrate how to add headers
+to your HTTP request.</p>
+<p>Some websites <a class="footnote-reference brackets" href="#id8" id="id1">1</a> dislike being browsed by programs, or send different versions
+to different browsers <a class="footnote-reference brackets" href="#id9" id="id2">2</a>. By default urllib identifies itself as
+<code class="docutils literal notranslate"><span class="pre">Python-urllib/x.y</span></code> (where <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are the major and minor version
+numbers of the Python release,
+e.g. <code class="docutils literal notranslate"><span class="pre">Python-urllib/2.5</span></code>), which may confuse the site, or just plain
+not work. The way a browser identifies itself is through the
+<code class="docutils literal notranslate"><span class="pre">User-Agent</span></code> header <a class="footnote-reference brackets" href="#id10" id="id3">3</a>. When you create a Request object you can
+pass a dictionary of headers in. The following example makes the same
+request as above, but identifies itself as a version of Internet
+Explorer <a class="footnote-reference brackets" href="#id11" id="id4">4</a>.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">urllib.parse</span>
+<span class="kn">import</span> <span class="nn">urllib.request</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s1">'http://www.someserver.com/cgi-bin/register.cgi'</span>
+<span class="n">user_agent</span> <span class="o">=</span> <span class="s1">'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'</span>
+<span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Michael Foord'</span><span class="p">,</span>
+          <span class="s1">'location'</span><span class="p">:</span> <span class="s1">'Northampton'</span><span class="p">,</span>
+          <span class="s1">'language'</span><span class="p">:</span> <span class="s1">'Python'</span> <span class="p">}</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="n">user_agent</span><span class="p">}</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'ascii'</span><span class="p">)</span>
+<span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+   <span class="n">the_page</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The response also has two useful methods. See the section on <a class="reference internal" href="#info-and-geturl">info and geturl</a>
+which comes after we have a look at what happens when things go wrong.</p>
+</section>
+</section>
+<section id="handling-exceptions">
+<h2>Handling Exceptions<a class="headerlink" href="#handling-exceptions" title="Permalink to this headline">#</a></h2>
+<p><em>urlopen</em> raises <code class="xref py py-exc docutils literal notranslate"><span class="pre">URLError</span></code> when it cannot handle a response (though as
+usual with Python APIs, built-in exceptions such as <a class="reference internal" href="../library/exceptions.html#ValueError" title="ValueError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a>,
+<a class="reference internal" href="../library/exceptions.html#TypeError" title="TypeError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> etc. may also be raised).</p>
+<p><code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPError</span></code> is the subclass of <code class="xref py py-exc docutils literal notranslate"><span class="pre">URLError</span></code> raised in the specific case of
+HTTP URLs.</p>
+<p>The exception classes are exported from the <a class="reference internal" href="../library/urllib.error.html#module-urllib.error" title="urllib.error: Exception classes raised by urllib.request."><code class="xref py py-mod docutils literal notranslate"><span class="pre">urllib.error</span></code></a> module.</p>
+<section id="urlerror">
+<h3>URLError<a class="headerlink" href="#urlerror" title="Permalink to this headline">#</a></h3>
+<p>Often, URLError is raised because there is no network connection (no route to
+the specified server), or the specified server doesn’t exist.  In this case, the
+exception raised will have a ‘reason’ attribute, which is a tuple containing an
+error code and a text error message.</p>
+<p>e.g.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s1">'http://www.pretend_server.org'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">except</span> <span class="n">urllib</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">URLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">reason</span><span class="p">)</span>      
+<span class="gp">...</span>
+<span class="go">(4, 'getaddrinfo failed')</span>
+</pre></div>
+</div>
+</section>
+<section id="httperror">
+<h3>HTTPError<a class="headerlink" href="#httperror" title="Permalink to this headline">#</a></h3>
+<p>Every HTTP response from the server contains a numeric “status code”. Sometimes
+the status code indicates that the server is unable to fulfil the request. The
+default handlers will handle some of these responses for you (for example, if
+the response is a “redirection” that requests the client fetch the document from
+a different URL, urllib will handle that for you). For those it can’t handle,
+urlopen will raise an <code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPError</span></code>. Typical errors include ‘404’ (page not
+found), ‘403’ (request forbidden), and ‘401’ (authentication required).</p>
+<p>See section 10 of <span class="target" id="index-1"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc2616.html"><strong>RFC 2616</strong></a> for a reference on all the HTTP error codes.</p>
+<p>The <code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPError</span></code> instance raised will have an integer ‘code’ attribute, which
+corresponds to the error sent by the server.</p>
+<section id="error-codes">
+<h4>Error Codes<a class="headerlink" href="#error-codes" title="Permalink to this headline">#</a></h4>
+<p>Because the default handlers handle redirects (codes in the 300 range), and
+codes in the 100–299 range indicate success, you will usually only see error
+codes in the 400–599 range.</p>
+<p><a class="reference internal" href="../library/http.server.html#http.server.BaseHTTPRequestHandler.responses" title="http.server.BaseHTTPRequestHandler.responses"><code class="xref py py-attr docutils literal notranslate"><span class="pre">http.server.BaseHTTPRequestHandler.responses</span></code></a> is a useful dictionary of
+response codes in that shows all the response codes used by <span class="target" id="index-2"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc2616.html"><strong>RFC 2616</strong></a>. The
+dictionary is reproduced here for convenience</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Table mapping response codes to messages; entries have the</span>
+<span class="c1"># form {code: (shortmessage, longmessage)}.</span>
+<span class="n">responses</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">100</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Continue'</span><span class="p">,</span> <span class="s1">'Request received, please continue'</span><span class="p">),</span>
+    <span class="mi">101</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Switching Protocols'</span><span class="p">,</span>
+          <span class="s1">'Switching to new protocol; obey Upgrade header'</span><span class="p">),</span>
+
+    <span class="mi">200</span><span class="p">:</span> <span class="p">(</span><span class="s1">'OK'</span><span class="p">,</span> <span class="s1">'Request fulfilled, document follows'</span><span class="p">),</span>
+    <span class="mi">201</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Created'</span><span class="p">,</span> <span class="s1">'Document created, URL follows'</span><span class="p">),</span>
+    <span class="mi">202</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Accepted'</span><span class="p">,</span>
+          <span class="s1">'Request accepted, processing continues off-line'</span><span class="p">),</span>
+    <span class="mi">203</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Non-Authoritative Information'</span><span class="p">,</span> <span class="s1">'Request fulfilled from cache'</span><span class="p">),</span>
+    <span class="mi">204</span><span class="p">:</span> <span class="p">(</span><span class="s1">'No Content'</span><span class="p">,</span> <span class="s1">'Request fulfilled, nothing follows'</span><span class="p">),</span>
+    <span class="mi">205</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Reset Content'</span><span class="p">,</span> <span class="s1">'Clear input form for further input.'</span><span class="p">),</span>
+    <span class="mi">206</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Partial Content'</span><span class="p">,</span> <span class="s1">'Partial content follows.'</span><span class="p">),</span>
+
+    <span class="mi">300</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Multiple Choices'</span><span class="p">,</span>
+          <span class="s1">'Object has several resources -- see URI list'</span><span class="p">),</span>
+    <span class="mi">301</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Moved Permanently'</span><span class="p">,</span> <span class="s1">'Object moved permanently -- see URI list'</span><span class="p">),</span>
+    <span class="mi">302</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Found'</span><span class="p">,</span> <span class="s1">'Object moved temporarily -- see URI list'</span><span class="p">),</span>
+    <span class="mi">303</span><span class="p">:</span> <span class="p">(</span><span class="s1">'See Other'</span><span class="p">,</span> <span class="s1">'Object moved -- see Method and URL list'</span><span class="p">),</span>
+    <span class="mi">304</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Not Modified'</span><span class="p">,</span>
+          <span class="s1">'Document has not changed since given time'</span><span class="p">),</span>
+    <span class="mi">305</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Use Proxy'</span><span class="p">,</span>
+          <span class="s1">'You must use proxy specified in Location to access this '</span>
+          <span class="s1">'resource.'</span><span class="p">),</span>
+    <span class="mi">307</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Temporary Redirect'</span><span class="p">,</span>
+          <span class="s1">'Object moved temporarily -- see URI list'</span><span class="p">),</span>
+
+    <span class="mi">400</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Bad Request'</span><span class="p">,</span>
+          <span class="s1">'Bad request syntax or unsupported method'</span><span class="p">),</span>
+    <span class="mi">401</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Unauthorized'</span><span class="p">,</span>
+          <span class="s1">'No permission -- see authorization schemes'</span><span class="p">),</span>
+    <span class="mi">402</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Payment Required'</span><span class="p">,</span>
+          <span class="s1">'No payment -- see charging schemes'</span><span class="p">),</span>
+    <span class="mi">403</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Forbidden'</span><span class="p">,</span>
+          <span class="s1">'Request forbidden -- authorization will not help'</span><span class="p">),</span>
+    <span class="mi">404</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Not Found'</span><span class="p">,</span> <span class="s1">'Nothing matches the given URI'</span><span class="p">),</span>
+    <span class="mi">405</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Method Not Allowed'</span><span class="p">,</span>
+          <span class="s1">'Specified method is invalid for this server.'</span><span class="p">),</span>
+    <span class="mi">406</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Not Acceptable'</span><span class="p">,</span> <span class="s1">'URI not available in preferred format.'</span><span class="p">),</span>
+    <span class="mi">407</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Proxy Authentication Required'</span><span class="p">,</span> <span class="s1">'You must authenticate with '</span>
+          <span class="s1">'this proxy before proceeding.'</span><span class="p">),</span>
+    <span class="mi">408</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Request Timeout'</span><span class="p">,</span> <span class="s1">'Request timed out; try again later.'</span><span class="p">),</span>
+    <span class="mi">409</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Conflict'</span><span class="p">,</span> <span class="s1">'Request conflict.'</span><span class="p">),</span>
+    <span class="mi">410</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Gone'</span><span class="p">,</span>
+          <span class="s1">'URI no longer exists and has been permanently removed.'</span><span class="p">),</span>
+    <span class="mi">411</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Length Required'</span><span class="p">,</span> <span class="s1">'Client must specify Content-Length.'</span><span class="p">),</span>
+    <span class="mi">412</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Precondition Failed'</span><span class="p">,</span> <span class="s1">'Precondition in headers is false.'</span><span class="p">),</span>
+    <span class="mi">413</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Request Entity Too Large'</span><span class="p">,</span> <span class="s1">'Entity is too large.'</span><span class="p">),</span>
+    <span class="mi">414</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Request-URI Too Long'</span><span class="p">,</span> <span class="s1">'URI is too long.'</span><span class="p">),</span>
+    <span class="mi">415</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Unsupported Media Type'</span><span class="p">,</span> <span class="s1">'Entity body in unsupported format.'</span><span class="p">),</span>
+    <span class="mi">416</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Requested Range Not Satisfiable'</span><span class="p">,</span>
+          <span class="s1">'Cannot satisfy request range.'</span><span class="p">),</span>
+    <span class="mi">417</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Expectation Failed'</span><span class="p">,</span>
+          <span class="s1">'Expect condition could not be satisfied.'</span><span class="p">),</span>
+
+    <span class="mi">500</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Internal Server Error'</span><span class="p">,</span> <span class="s1">'Server got itself in trouble'</span><span class="p">),</span>
+    <span class="mi">501</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Not Implemented'</span><span class="p">,</span>
+          <span class="s1">'Server does not support this operation'</span><span class="p">),</span>
+    <span class="mi">502</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Bad Gateway'</span><span class="p">,</span> <span class="s1">'Invalid responses from another server/proxy.'</span><span class="p">),</span>
+    <span class="mi">503</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Service Unavailable'</span><span class="p">,</span>
+          <span class="s1">'The server cannot process the request due to a high load'</span><span class="p">),</span>
+    <span class="mi">504</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Gateway Timeout'</span><span class="p">,</span>
+          <span class="s1">'The gateway server did not receive a timely response'</span><span class="p">),</span>
+    <span class="mi">505</span><span class="p">:</span> <span class="p">(</span><span class="s1">'HTTP Version Not Supported'</span><span class="p">,</span> <span class="s1">'Cannot fulfill request.'</span><span class="p">),</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>When an error is raised the server responds by returning an HTTP error code
+<em>and</em> an error page. You can use the <code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPError</span></code> instance as a response on the
+page returned. This means that as well as the code attribute, it also has read,
+geturl, and info, methods as returned by the <code class="docutils literal notranslate"><span class="pre">urllib.response</span></code> module:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s1">'http://www.python.org/fish.html'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">except</span> <span class="n">urllib</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>  
+<span class="gp">...</span>
+<span class="go">404</span>
+<span class="go">b'&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"</span>
+<span class="go">  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;\n\n\n&lt;html</span>
+<span class="go">  ...</span>
+<span class="go">  &lt;title&gt;Page Not Found&lt;/title&gt;\n</span>
+<span class="go">  ...</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="wrapping-it-up">
+<h3>Wrapping it Up<a class="headerlink" href="#wrapping-it-up" title="Permalink to this headline">#</a></h3>
+<p>So if you want to be prepared for <code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPError</span></code> <em>or</em> <code class="xref py py-exc docutils literal notranslate"><span class="pre">URLError</span></code> there are two
+basic approaches. I prefer the second approach.</p>
+<section id="number-1">
+<h4>Number 1<a class="headerlink" href="#number-1" title="Permalink to this headline">#</a></h4>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">urlopen</span>
+<span class="kn">from</span> <span class="nn">urllib.error</span> <span class="kn">import</span> <span class="n">URLError</span><span class="p">,</span> <span class="n">HTTPError</span>
+<span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">someurl</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'The server couldn</span><span class="se">\'</span><span class="s1">t fulfill the request.'</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'Error code: '</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">URLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'We failed to reach a server.'</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'Reason: '</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">reason</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># everything is fine</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">HTTPError</span></code> <em>must</em> come first, otherwise <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">URLError</span></code>
+will <em>also</em> catch an <code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPError</span></code>.</p>
+</div>
+</section>
+<section id="number-2">
+<h4>Number 2<a class="headerlink" href="#number-2" title="Permalink to this headline">#</a></h4>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">urlopen</span>
+<span class="kn">from</span> <span class="nn">urllib.error</span> <span class="kn">import</span> <span class="n">URLError</span>
+<span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">someurl</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">URLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">'reason'</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'We failed to reach a server.'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'Reason: '</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">reason</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">'code'</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'The server couldn</span><span class="se">\'</span><span class="s1">t fulfill the request.'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'Error code: '</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># everything is fine</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="info-and-geturl">
+<h2>info and geturl<a class="headerlink" href="#info-and-geturl" title="Permalink to this headline">#</a></h2>
+<p>The response returned by urlopen (or the <code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPError</span></code> instance) has two
+useful methods <code class="xref py py-meth docutils literal notranslate"><span class="pre">info()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">geturl()</span></code> and is defined in the module
+<a class="reference internal" href="../library/urllib.request.html#module-urllib.response" title="urllib.response: Response classes used by urllib."><code class="xref py py-mod docutils literal notranslate"><span class="pre">urllib.response</span></code></a>..</p>
+<p><strong>geturl</strong> - this returns the real URL of the page fetched. This is useful
+because <code class="docutils literal notranslate"><span class="pre">urlopen</span></code> (or the opener object used) may have followed a
+redirect. The URL of the page fetched may not be the same as the URL requested.</p>
+<p><strong>info</strong> - this returns a dictionary-like object that describes the page
+fetched, particularly the headers sent by the server. It is currently an
+<code class="xref py py-class docutils literal notranslate"><span class="pre">http.client.HTTPMessage</span></code> instance.</p>
+<p>Typical headers include ‘Content-length’, ‘Content-type’, and so on. See the
+<a class="reference external" href="http://jkorpela.fi/http.html">Quick Reference to HTTP Headers</a>
+for a useful listing of HTTP headers with brief explanations of their meaning
+and use.</p>
+</section>
+<section id="openers-and-handlers">
+<h2>Openers and Handlers<a class="headerlink" href="#openers-and-handlers" title="Permalink to this headline">#</a></h2>
+<p>When you fetch a URL you use an opener (an instance of the perhaps
+confusingly-named <a class="reference internal" href="../library/urllib.request.html#urllib.request.OpenerDirector" title="urllib.request.OpenerDirector"><code class="xref py py-class docutils literal notranslate"><span class="pre">urllib.request.OpenerDirector</span></code></a>). Normally we have been using
+the default opener - via <code class="docutils literal notranslate"><span class="pre">urlopen</span></code> - but you can create custom
+openers. Openers use handlers. All the “heavy lifting” is done by the
+handlers. Each handler knows how to open URLs for a particular URL scheme (http,
+ftp, etc.), or how to handle an aspect of URL opening, for example HTTP
+redirections or HTTP cookies.</p>
+<p>You will want to create openers if you want to fetch URLs with specific handlers
+installed, for example to get an opener that handles cookies, or to get an
+opener that does not handle redirections.</p>
+<p>To create an opener, instantiate an <code class="docutils literal notranslate"><span class="pre">OpenerDirector</span></code>, and then call
+<code class="docutils literal notranslate"><span class="pre">.add_handler(some_handler_instance)</span></code> repeatedly.</p>
+<p>Alternatively, you can use <code class="docutils literal notranslate"><span class="pre">build_opener</span></code>, which is a convenience function for
+creating opener objects with a single function call.  <code class="docutils literal notranslate"><span class="pre">build_opener</span></code> adds
+several handlers by default, but provides a quick way to add more and/or
+override the default handlers.</p>
+<p>Other sorts of handlers you might want to can handle proxies, authentication,
+and other common but slightly specialised situations.</p>
+<p><code class="docutils literal notranslate"><span class="pre">install_opener</span></code> can be used to make an <code class="docutils literal notranslate"><span class="pre">opener</span></code> object the (global) default
+opener. This means that calls to <code class="docutils literal notranslate"><span class="pre">urlopen</span></code> will use the opener you have
+installed.</p>
+<p>Opener objects have an <code class="docutils literal notranslate"><span class="pre">open</span></code> method, which can be called directly to fetch
+urls in the same way as the <code class="docutils literal notranslate"><span class="pre">urlopen</span></code> function: there’s no need to call
+<code class="docutils literal notranslate"><span class="pre">install_opener</span></code>, except as a convenience.</p>
+</section>
+<section id="id5">
+<h2>Basic Authentication<a class="headerlink" href="#id5" title="Permalink to this headline">#</a></h2>
+<p>To illustrate creating and installing a handler we will use the
+<code class="docutils literal notranslate"><span class="pre">HTTPBasicAuthHandler</span></code>. For a more detailed discussion of this subject –
+including an explanation of how Basic Authentication works - see the <a class="reference external" href="http://www.voidspace.org.uk/python/articles/authentication.shtml">Basic
+Authentication Tutorial</a>.</p>
+<p>When authentication is required, the server sends a header (as well as the 401
+error code) requesting authentication.  This specifies the authentication scheme
+and a ‘realm’. The header looks like: <code class="docutils literal notranslate"><span class="pre">WWW-Authenticate:</span> <span class="pre">SCHEME</span>
+<span class="pre">realm="REALM"</span></code>.</p>
+<p>e.g.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>WWW-Authenticate: Basic realm="cPanel Users"
+</pre></div>
+</div>
+<p>The client should then retry the request with the appropriate name and password
+for the realm included as a header in the request. This is ‘basic
+authentication’. In order to simplify this process we can create an instance of
+<code class="docutils literal notranslate"><span class="pre">HTTPBasicAuthHandler</span></code> and an opener to use this handler.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">HTTPBasicAuthHandler</span></code> uses an object called a password manager to handle
+the mapping of URLs and realms to passwords and usernames. If you know what the
+realm is (from the authentication header sent by the server), then you can use a
+<code class="docutils literal notranslate"><span class="pre">HTTPPasswordMgr</span></code>. Frequently one doesn’t care what the realm is. In that
+case, it is convenient to use <code class="docutils literal notranslate"><span class="pre">HTTPPasswordMgrWithDefaultRealm</span></code>. This allows
+you to specify a default username and password for a URL. This will be supplied
+in the absence of you providing an alternative combination for a specific
+realm. We indicate this by providing <code class="docutils literal notranslate"><span class="pre">None</span></code> as the realm argument to the
+<code class="docutils literal notranslate"><span class="pre">add_password</span></code> method.</p>
+<p>The top-level URL is the first URL that requires authentication. URLs “deeper”
+than the URL you pass to .add_password() will also match.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a password manager</span>
+<span class="n">password_mgr</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">HTTPPasswordMgrWithDefaultRealm</span><span class="p">()</span>
+
+<span class="c1"># Add the username and password.</span>
+<span class="c1"># If we knew the realm, we could use it instead of None.</span>
+<span class="n">top_level_url</span> <span class="o">=</span> <span class="s2">"http://example.com/foo/"</span>
+<span class="n">password_mgr</span><span class="o">.</span><span class="n">add_password</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">top_level_url</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+
+<span class="n">handler</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">HTTPBasicAuthHandler</span><span class="p">(</span><span class="n">password_mgr</span><span class="p">)</span>
+
+<span class="c1"># create "opener" (OpenerDirector instance)</span>
+<span class="n">opener</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">build_opener</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+<span class="c1"># use the opener to fetch a URL</span>
+<span class="n">opener</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">a_url</span><span class="p">)</span>
+
+<span class="c1"># Install the opener.</span>
+<span class="c1"># Now all calls to urllib.request.urlopen use our opener.</span>
+<span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">install_opener</span><span class="p">(</span><span class="n">opener</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the above example we only supplied our <code class="docutils literal notranslate"><span class="pre">HTTPBasicAuthHandler</span></code> to
+<code class="docutils literal notranslate"><span class="pre">build_opener</span></code>. By default openers have the handlers for normal situations
+– <code class="docutils literal notranslate"><span class="pre">ProxyHandler</span></code> (if a proxy setting such as an <span class="target" id="index-3"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">http_proxy</span></code>
+environment variable is set), <code class="docutils literal notranslate"><span class="pre">UnknownHandler</span></code>, <code class="docutils literal notranslate"><span class="pre">HTTPHandler</span></code>,
+<code class="docutils literal notranslate"><span class="pre">HTTPDefaultErrorHandler</span></code>, <code class="docutils literal notranslate"><span class="pre">HTTPRedirectHandler</span></code>, <code class="docutils literal notranslate"><span class="pre">FTPHandler</span></code>,
+<code class="docutils literal notranslate"><span class="pre">FileHandler</span></code>, <code class="docutils literal notranslate"><span class="pre">DataHandler</span></code>, <code class="docutils literal notranslate"><span class="pre">HTTPErrorProcessor</span></code>.</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">top_level_url</span></code> is in fact <em>either</em> a full URL (including the ‘http:’ scheme
+component and the hostname and optionally the port number)
+e.g. <code class="docutils literal notranslate"><span class="pre">"http://example.com/"</span></code> <em>or</em> an “authority” (i.e. the hostname,
+optionally including the port number) e.g. <code class="docutils literal notranslate"><span class="pre">"example.com"</span></code> or <code class="docutils literal notranslate"><span class="pre">"example.com:8080"</span></code>
+(the latter example includes a port number).  The authority, if present, must
+NOT contain the “userinfo” component - for example <code class="docutils literal notranslate"><span class="pre">"joe:password@example.com"</span></code> is
+not correct.</p>
+</section>
+<section id="proxies">
+<h2>Proxies<a class="headerlink" href="#proxies" title="Permalink to this headline">#</a></h2>
+<p><strong>urllib</strong> will auto-detect your proxy settings and use those. This is through
+the <code class="docutils literal notranslate"><span class="pre">ProxyHandler</span></code>, which is part of the normal handler chain when a proxy
+setting is detected.  Normally that’s a good thing, but there are occasions
+when it may not be helpful <a class="footnote-reference brackets" href="#id12" id="id6">5</a>. One way to do this is to setup our own
+<code class="docutils literal notranslate"><span class="pre">ProxyHandler</span></code>, with no proxies defined. This is done using similar steps to
+setting up a <a class="reference external" href="http://www.voidspace.org.uk/python/articles/authentication.shtml">Basic Authentication</a> handler:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">proxy_support</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">ProxyHandler</span><span class="p">({})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">opener</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">build_opener</span><span class="p">(</span><span class="n">proxy_support</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">install_opener</span><span class="p">(</span><span class="n">opener</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently <code class="docutils literal notranslate"><span class="pre">urllib.request</span></code> <em>does not</em> support fetching of <code class="docutils literal notranslate"><span class="pre">https</span></code> locations
+through a proxy.  However, this can be enabled by extending urllib.request as
+shown in the recipe <a class="footnote-reference brackets" href="#id13" id="id7">6</a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">HTTP_PROXY</span></code> will be ignored if a variable <code class="docutils literal notranslate"><span class="pre">REQUEST_METHOD</span></code> is set; see
+the documentation on <a class="reference internal" href="../library/urllib.request.html#urllib.request.getproxies" title="urllib.request.getproxies"><code class="xref py py-func docutils literal notranslate"><span class="pre">getproxies()</span></code></a>.</p>
+</div>
+</section>
+<section id="sockets-and-layers">
+<h2>Sockets and Layers<a class="headerlink" href="#sockets-and-layers" title="Permalink to this headline">#</a></h2>
+<p>The Python support for fetching resources from the web is layered.  urllib uses
+the <a class="reference internal" href="../library/http.client.html#module-http.client" title="http.client: HTTP and HTTPS protocol client (requires sockets)."><code class="xref py py-mod docutils literal notranslate"><span class="pre">http.client</span></code></a> library, which in turn uses the socket library.</p>
+<p>As of Python 2.3 you can specify how long a socket should wait for a response
+before timing out. This can be useful in applications which have to fetch web
+pages. By default the socket module has <em>no timeout</em> and can hang. Currently,
+the socket timeout is not exposed at the http.client or urllib.request levels.
+However, you can set the default timeout globally for all sockets using</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">urllib.request</span>
+
+<span class="c1"># timeout in seconds</span>
+<span class="n">timeout</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">socket</span><span class="o">.</span><span class="n">setdefaulttimeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+
+<span class="c1"># this call to urllib.request.urlopen now uses the default timeout</span>
+<span class="c1"># we have set in the socket module</span>
+<span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="s1">'http://www.voidspace.org.uk'</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils"/>
+<section id="footnotes">
+<h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">#</a></h2>
+<p>This document was reviewed and revised by John Lee.</p>
+<dl class="footnote brackets">
+<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Google for example.</p>
+</dd>
+<dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>Browser sniffing is a very bad practice for website design - building
+sites using web standards is much more sensible. Unfortunately a lot of
+sites still send different versions to different browsers.</p>
+</dd>
+<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
+<dd><p>The user agent for MSIE 6 is
+<em>‘Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)’</em></p>
+</dd>
+<dt class="label" id="id11"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
+<dd><p>For details of more HTTP request headers, see
+<a class="reference external" href="http://jkorpela.fi/http.html">Quick Reference to HTTP Headers</a>.</p>
+</dd>
+<dt class="label" id="id12"><span class="brackets"><a class="fn-backref" href="#id6">5</a></span></dt>
+<dd><p>In my case I have to use a proxy to access the internet at work. If you
+attempt to fetch <em>localhost</em> URLs through this proxy it blocks them. IE
+is set to use the proxy, which urllib picks up on. In order to test
+scripts with a localhost server, I have to prevent urllib from using
+the proxy.</p>
+</dd>
+<dt class="label" id="id13"><span class="brackets"><a class="fn-backref" href="#id7">6</a></span></dt>
+<dd><p>urllib opener for SSL proxy (CONNECT method): <a class="reference external" href="https://code.activestate.com/recipes/456195/">ASPN Cookbook Recipe</a>.</p>
+</dd>
+</dl>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="argparse.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Argparse Tutorial</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="unicode.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Unicode HOWTO</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                <a href="../copyright.html">Copyright</a> &#169; 2001-2022, Python Software Foundation
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on May 17, 2022</div>
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">HOWTO Fetch Internet Resources Using The urllib Package</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#fetching-urls">Fetching URLs</a><ul>
+<li><a class="reference internal" href="#data">Data</a></li>
+<li><a class="reference internal" href="#headers">Headers</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#handling-exceptions">Handling Exceptions</a><ul>
+<li><a class="reference internal" href="#urlerror">URLError</a></li>
+<li><a class="reference internal" href="#httperror">HTTPError</a><ul>
+<li><a class="reference internal" href="#error-codes">Error Codes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#wrapping-it-up">Wrapping it Up</a><ul>
+<li><a class="reference internal" href="#number-1">Number 1</a></li>
+<li><a class="reference internal" href="#number-2">Number 2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#info-and-geturl">info and geturl</a></li>
+<li><a class="reference internal" href="#openers-and-handlers">Openers and Handlers</a></li>
+<li><a class="reference internal" href="#id5">Basic Authentication</a></li>
+<li><a class="reference internal" href="#proxies">Proxies</a></li>
+<li><a class="reference internal" href="#sockets-and-layers">Sockets and Layers</a></li>
+<li><a class="reference internal" href="#footnotes">Footnotes</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    </body>
+</html>

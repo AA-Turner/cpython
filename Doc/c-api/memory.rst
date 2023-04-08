@@ -427,13 +427,13 @@ Customize Memory Allocators
       :c:type:`PyMemAllocatorEx` and a new ``calloc`` field was added.
 
 
-.. c:type:: PyMemAllocatorDomain
+.. c:enum:: PyMemAllocatorDomain
 
    Enum used to identify an allocator domain. Domains:
 
    .. c:namespace:: NULL
 
-   .. c:macro:: PYMEM_DOMAIN_RAW
+   .. c:enumerator:: PYMEM_DOMAIN_RAW
 
       Functions:
 
@@ -442,7 +442,7 @@ Customize Memory Allocators
       * :c:func:`PyMem_RawCalloc`
       * :c:func:`PyMem_RawFree`
 
-   .. c:macro:: PYMEM_DOMAIN_MEM
+   .. c:enumerator:: PYMEM_DOMAIN_MEM
 
       Functions:
 
@@ -451,7 +451,7 @@ Customize Memory Allocators
       * :c:func:`PyMem_Calloc`
       * :c:func:`PyMem_Free`
 
-   .. c:macro:: PYMEM_DOMAIN_OBJ
+   .. c:enumerator:: PYMEM_DOMAIN_OBJ
 
       Functions:
 

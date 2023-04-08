@@ -176,7 +176,7 @@ There are three ways strings and buffers can be converted to C:
    The text will be encoded in the encoding specified by the first argument.
 
    :c:func:`PyArg_ParseTuple` will allocate a buffer of the needed size, copy the
-   encoded data into this buffer and adjust *\*buffer* to reference the newly
+   encoded data into this buffer and adjust :c:expr:`*buffer` to reference the newly
    allocated storage.  The caller is responsible for calling :c:func:`PyMem_Free` to
    free the allocated buffer after use.
 
@@ -310,13 +310,13 @@ Other objects
 ``O&`` (object) [*converter*, *anything*]
    Convert a Python object to a C variable through a *converter* function.  This
    takes two arguments: the first is a function, the second is the address of a C
-   variable (of arbitrary type), converted to :c:expr:`void *`.  The *converter*
+   variable (of arbitrary type), converted to :c:expr:`void*`.  The *converter*
    function in turn is called as follows::
 
       status = converter(object, address);
 
    where *object* is the Python object to be converted and *address* is the
-   :c:expr:`void*` argument that was passed to the ``PyArg_Parse*`` function.
+   :c:expr:`void*` argument that was passed to the ``PyArg_Parse*`` functions.
    The returned *status* should be ``1`` for a successful conversion and ``0`` if
    the conversion has failed.  When the conversion fails, the *converter* function
    should raise an exception and leave the content of *address* unmodified.
@@ -604,7 +604,7 @@ Building values
       Convert a C :c:expr:`unsigned long long` to a Python integer object.
 
    ``n`` (:class:`int`) [:c:type:`Py_ssize_t`]
-      Convert a C :c:type:`Py_ssize_t` to a Python integer.
+      Convert a C :c:expr:`Py_ssize_t` to a Python integer.
 
    ``c`` (:class:`bytes` of length 1) [char]
       Convert a C :c:expr:`int` representing a byte to a Python :class:`bytes` object of
@@ -621,7 +621,7 @@ Building values
       Convert a C :c:expr:`float` to a Python floating point number.
 
    ``D`` (:class:`complex`) [Py_complex \*]
-      Convert a C :c:type:`Py_complex` structure to a Python complex number.
+      Convert a C :c:expr:`Py_complex` structure to a Python complex number.
 
    ``O`` (object) [PyObject \*]
       Pass a Python object untouched but create a new
@@ -643,7 +643,8 @@ Building values
 
    ``O&`` (object) [*converter*, *anything*]
       Convert *anything* to a Python object through a *converter* function.  The
-      function is called with *anything* (which should be compatible with :c:expr:`void*`)
+	  function is called with *anything* (which should be compatible with
+	  :c:expr:`void*`)
       as its argument and should return a "new" Python object, or ``NULL`` if an
       error occurred.
 

@@ -274,7 +274,7 @@ should instead read:
 Available static markers
 ------------------------
 
-.. object:: function__entry(str filename, str funcname, int lineno)
+.. object:: void function__entry(str filename, str funcname, int lineno)
 
    This marker indicates that execution of a Python function has begun.
    It is only triggered for pure-Python (bytecode) functions.
@@ -290,7 +290,7 @@ Available static markers
 
        * ``$arg3`` : ``int`` line number
 
-.. object:: function__return(str filename, str funcname, int lineno)
+.. object:: void function__return(str filename, str funcname, int lineno)
 
    This marker is the converse of :c:func:`!function__entry`, and indicates that
    execution of a Python function has ended (either via ``return``, or via an
@@ -298,7 +298,7 @@ Available static markers
 
    The arguments are the same as for :c:func:`!function__entry`
 
-.. object:: line(str filename, str funcname, int lineno)
+.. object:: void line(str filename, str funcname, int lineno)
 
    This marker indicates a Python line is about to be executed.  It is
    the equivalent of line-by-line tracing with a Python profiler.  It is
@@ -306,24 +306,24 @@ Available static markers
 
    The arguments are the same as for :c:func:`!function__entry`.
 
-.. object:: gc__start(int generation)
+.. object:: void gc__start(int generation)
 
    Fires when the Python interpreter starts a garbage collection cycle.
    ``arg0`` is the generation to scan, like :func:`gc.collect()`.
 
-.. object:: gc__done(long collected)
+.. object:: void gc__done(long collected)
 
    Fires when the Python interpreter finishes a garbage collection
    cycle. ``arg0`` is the number of collected objects.
 
-.. object:: import__find__load__start(str modulename)
+.. object:: void import__find__load__start(str modulename)
 
    Fires before :mod:`importlib` attempts to find and load the module.
    ``arg0`` is the module name.
 
    .. versionadded:: 3.7
 
-.. object:: import__find__load__done(str modulename, int found)
+.. object:: void import__find__load__done(str modulename, int found)
 
    Fires after :mod:`importlib`'s find_and_load function is called.
    ``arg0`` is the module name, ``arg1`` indicates if module was
@@ -332,7 +332,7 @@ Available static markers
    .. versionadded:: 3.7
 
 
-.. object:: audit(str event, void *tuple)
+.. object:: void audit(str event, void *tuple)
 
    Fires when :func:`sys.audit` or :c:func:`PySys_Audit` is called.
    ``arg0`` is the event name as C string, ``arg1`` is a :c:type:`PyObject`
@@ -375,12 +375,12 @@ If this file is installed in SystemTap's tapset directory (e.g.
 ``/usr/share/systemtap/tapset``), then these additional probepoints become
 available:
 
-.. object:: python.function.entry(str filename, str funcname, int lineno, frameptr)
+.. object:: void python.function.entry(str filename, str funcname, int lineno, frameptr)
 
    This probe point indicates that execution of a Python function has begun.
    It is only triggered for pure-Python (bytecode) functions.
 
-.. object:: python.function.return(str filename, str funcname, int lineno, frameptr)
+.. object:: void python.function.return(str filename, str funcname, int lineno, frameptr)
 
    This probe point is the converse of ``python.function.return``, and
    indicates that execution of a Python function has ended (either via

@@ -1182,7 +1182,7 @@ other extension modules must be exported in a different way.
 
 Python provides a special mechanism to pass C-level information (pointers) from
 one extension module to another one: Capsules. A Capsule is a Python data type
-which stores a pointer (:c:expr:`void \*`).  Capsules can only be created and
+which stores a pointer (:c:expr:`void *`).  Capsules can only be created and
 accessed via their C API, but they can be passed around like any other Python
 object. In particular,  they can be assigned to a name in an extension module's
 namespace. Other extension modules can then import this module, retrieve the
@@ -1196,7 +1196,7 @@ different ways between the module providing the code and the client modules.
 
 Whichever method you choose, it's important to name your Capsules properly.
 The function :c:func:`PyCapsule_New` takes a name parameter
-(:c:expr:`const char \*`); you're permitted to pass in a ``NULL`` name, but
+(:c:expr:`const char *`); you're permitted to pass in a ``NULL`` name, but
 we strongly encourage you to specify a name.  Properly named Capsules provide
 a degree of runtime type-safety; there is no feasible way to tell one unnamed
 Capsule from another.

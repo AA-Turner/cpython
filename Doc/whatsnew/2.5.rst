@@ -1695,8 +1695,8 @@ attributes of the :class:`CDLL` object.   ::
    result = libc.printf("Line of output\n")
 
 Type constructors for the various C types are provided: :func:`c_int`,
-:func:`c_float`, :func:`c_double`, :func:`c_char_p` (equivalent to :c:expr:`char
-\*`), and so forth.  Unlike Python's types, the C versions are all mutable; you
+:func:`c_float`, :func:`c_double`, :func:`c_char_p` (equivalent to :c:expr:`char*`),
+and so forth.  Unlike Python's types, the C versions are all mutable; you
 can assign to their :attr:`value` attribute to change the wrapped value.  Python
 integers and strings will be automatically converted to the corresponding C
 types, but for other types you  must call the correct type constructor.  (And I

@@ -1,10 +1,10 @@
 import os
-import os.path
 import subprocess
 import sys
 import sysconfig
 import tempfile
 from importlib import resources
+from pathlib import Path
 
 
 __all__ = ["version", "bootstrap"]
@@ -150,23 +150,19 @@ def _bootstrap(*, root=None, upgrade=False, user=False,
         # Put our bundled wheels into a temporary directory and construct the
         # additional paths that need added to sys.path
         package = _get_pip_info()
+        wheel_name = package["filename"]
         if package["bundled"]:
             # Use bundled wheel package
-            wheel_name = package["filename"]
             wheel_path = resources.files("ensurepip") / "_bundled" / wheel_name
-            whl = wheel_path.read_bytes()
         else:
             # Use the wheel package directory
-            wheel_name = package["filename"]
-            wheel_path = os.path.join(_WHEEL_PKG_DIR, package["filename"])
-            with open(wheel_path, "rb") as fp:
-                whl = fp.read()
+            wheel_path = Path(_WHEEL_PKG_DIR, wheel_name)
+        whl = wheel_path.read_bytes()
 
-        filename = os.path.join(tmpdir, wheel_name)
-        with open(filename, "wb") as fp:
-            fp.write(whl)
+        filename = Path(tmpdir, wheel_name)
+        filename.write_bytes(whl)
 
-        additional_paths = [filename]
+        additional_paths = [str(filename)]
 
         # Construct the arguments to be passed to the pip command
         args = ["install", "--no-cache-dir", "--no-index", "--find-links", tmpdir]

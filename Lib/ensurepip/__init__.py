@@ -34,17 +34,16 @@ def _find_packages(path):
         filenames = os.listdir(path)
     except OSError:
         # Ignore: path doesn't exist or permission error
-        filenames = ()
+        return {}
     # Make the code deterministic if a directory contains multiple wheel files
     # of the same package, but don't attempt to implement correct version
     # comparison since this case should not happen.
-    filenames = sorted(filenames)
-    for filename in filenames:
+    for filename in sorted(filenames):
         # filename is like 'pip-21.2.4-py3-none-any.whl'
         if not filename.endswith(".whl"):
             continue
         for name in _PACKAGE_NAMES:
-            prefix = name + '-'
+            prefix = f'{name}-'
             if filename.startswith(prefix):
                 break
         else:

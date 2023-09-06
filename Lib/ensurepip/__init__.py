@@ -36,7 +36,7 @@ def _find_wheel_pkg_dir_pip():
 
         # Extract '21.2.4' from 'pip-21.2.4-py3-none-any.whl'
         version = filename.removeprefix("pip-").partition("-")[0]
-        return version, filename
+        return {"version": version, "filename": filename, "bundled": False}
     return None
 
 
@@ -46,13 +46,11 @@ def _get_pip_info():
         return _PACKAGE
 
     filename = f"pip-{_PIP_VERSION}-py3-none-any.whl"
-    package = {"version": _PIP_VERSION, "filename": filename, "bundled": True}
-    if _WHEEL_PKG_DIR:
-        # only used the wheel package directory if all packages are found there
-        if (pkg := _find_wheel_pkg_dir_pip()) is not None:
-            version, filename = pkg
-            package = {"version": version, "filename": filename, "bundled": False}
-    _PACKAGE = package
+    details = {"version": _PIP_VERSION, "filename": filename, "bundled": True}
+    # only used the wheel package directory if we found pip
+    if _WHEEL_PKG_DIR and (pkg := _find_wheel_pkg_dir_pip()) is not None:
+        details = pkg
+    _PACKAGE = details
     return _PACKAGE
 _PACKAGE = None
 

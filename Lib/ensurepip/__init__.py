@@ -57,7 +57,7 @@ def _find_packages(path):
 
 
 def _get_packages():
-    global _PACKAGES, _WHEEL_PKG_DIR
+    global _PACKAGES
     if _PACKAGES is not None:
         return _PACKAGES
 

@@ -1,4 +1,3 @@
-import collections
 import os
 import os.path
 import subprocess
@@ -12,11 +11,6 @@ __all__ = ["version", "bootstrap"]
 _PIP_VERSION = "23.2.1"
 _PIP_SHA_256 = "7ccf472345f20d35bdc9d1841ff5f313260c2c33fe417f48c30ac46cccabf5be"
 
-# Packages bundled in ensurepip._bundled have wheel_name set.
-# Packages from WHEEL_PKG_DIR have wheel_path set.
-_Package = collections.namedtuple('Package',
-                                  ('version', 'wheel_name', 'wheel_path'))
-
 # Directory of system wheel packages. Some Linux distribution packaging
 # policies recommend against bundling dependencies. For example, Fedora
 # installs wheel packages in the /usr/share/python-wheels/ directory and don't
@@ -24,9 +18,9 @@ _Package = collections.namedtuple('Package',
 _WHEEL_PKG_DIR = sysconfig.get_config_var('WHEEL_PKG_DIR')
 
 
-def _find_wheel_pkg_dir_pip(path):
+def _find_wheel_pkg_dir_pip():
     try:
-        filenames = os.listdir(path)
+        filenames = os.listdir(_WHEEL_PKG_DIR)
     except OSError:
         # Ignore: path doesn't exist or permission error
         return None
@@ -37,13 +31,12 @@ def _find_wheel_pkg_dir_pip(path):
         # filename is like 'pip-21.2.4-py3-none-any.whl'
         if not filename.endswith(".whl"):
             continue
-        if not filename.startswith(f'pip-'):
+        if not filename.startswith("pip-"):
             continue
 
         # Extract '21.2.4' from 'pip-21.2.4-py3-none-any.whl'
-        version = filename.removeprefix(f'pip-').partition('-')[0]
-        wheel_path = os.path.join(path, filename)
-        return version, wheel_path
+        version = filename.removeprefix("pip-").partition("-")[0]
+        return version, filename
     return None
 
 
@@ -52,14 +45,13 @@ def _get_pip_info():
     if _PACKAGE is not None:
         return _PACKAGE
 
-    wheel_name = f"pip-{_PIP_VERSION}-py3-none-any.whl"
-    package = _Package(_PIP_VERSION, wheel_name, None)
+    filename = f"pip-{_PIP_VERSION}-py3-none-any.whl"
+    package = {"version": _PIP_VERSION, "filename": filename, "bundled": True}
     if _WHEEL_PKG_DIR:
-        pkg = _find_wheel_pkg_dir_pip(_WHEEL_PKG_DIR)
         # only used the wheel package directory if all packages are found there
-        if pkg is not None:
-            version, wheel_path = pkg
-            package = _Package(version, None, wheel_path)
+        if (pkg := _find_wheel_pkg_dir_pip()) is not None:
+            version, filename = pkg
+            package = {"version": version, "filename": filename, "bundled": False}
     _PACKAGE = package
     return _PACKAGE
 _PACKAGE = None
@@ -95,7 +87,7 @@ def version():
     """
     Returns a string specifying the bundled version of pip.
     """
-    return _get_pip_info().version
+    return _get_pip_info()["version"]
 
 
 def _disable_pip_configuration_settings():
@@ -158,16 +150,17 @@ def _bootstrap(*, root=None, upgrade=False, user=False,
         # Put our bundled wheels into a temporary directory and construct the
         # additional paths that need added to sys.path
         package = _get_pip_info()
-        if package.wheel_name:
+        if package["bundled"]:
             # Use bundled wheel package
-            wheel_name = package.wheel_name
+            wheel_name = package["filename"]
             wheel_path = resources.files("ensurepip") / "_bundled" / wheel_name
             whl = wheel_path.read_bytes()
         else:
             # Use the wheel package directory
-            with open(package.wheel_path, "rb") as fp:
+            wheel_name = package["filename"]
+            wheel_path = os.path.join(_WHEEL_PKG_DIR, package["filename"])
+            with open(wheel_path, "rb") as fp:
                 whl = fp.read()
-            wheel_name = os.path.basename(package.wheel_path)
 
         filename = os.path.join(tmpdir, wheel_name)
         with open(filename, "wb") as fp:

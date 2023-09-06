@@ -214,7 +214,7 @@ def _uninstall_helper(*, verbosity=0):
     # leave it alone
     available_version = version()
     if pip.__version__ != available_version:
-        print(f"ensurepip will only uninstall a matching version "
+        print("ensurepip will only uninstall a matching version "
               f"({pip.__version__!r} installed, "
               f"{available_version!r} available)",
               file=sys.stderr)

@@ -36,54 +36,52 @@ def print_error(message: str) -> None:
         print(message, file=sys.stderr)
 
 
-def download_wheels() -> int:
+def download_pip_wheel() -> int:
     """Download wheels into bundle if they are not there yet."""
 
-    projects = _get_projects()
-    if not projects:
-        print_error(f"Could not find '_PROJECTS' in {ENSURE_PIP_INIT}.")
+    details = _get_pip_details()
+    if details is None:
+        print_error("Could not find '_PIP_VERSION' and '_PIP_SHA_256' in "
+                    f"{ENSURE_PIP_INIT}.")
         return 1
 
-    errors = 0
-    for name, version, checksum in projects:
-        wheel_filename = f'{name}-{version}-py3-none-any.whl'
-        wheel_path = WHEEL_DIR / wheel_filename
-        if wheel_path.exists():
-            if _is_valid_wheel(wheel_path.read_bytes(), checksum=checksum):
-                print_notice(f"A valid '{name}' wheel already exists!")
-                continue
-            else:
-                print_error(f"An invalid '{name}' wheel exists.")
-                os.remove(wheel_path)
+    version, checksum = details
 
-        wheel_url = _wheel_url(name, version)
-        print_notice(f"Downloading {wheel_url!r}")
-        try:
-            with urlopen(wheel_url, cadefault=True) as response:
-                whl = response.read()
-        except URLError as exc:
-            print_error(f"Failed to download {wheel_url!r}: {exc}")
-            errors = 1
-            continue
-        if not _is_valid_wheel(whl, checksum=checksum):
-            print_error(f"Failed to validate checksum for {wheel_url!r}!")
-            errors = 1
-            continue
+    wheel_filename = f'pip-{version}-py3-none-any.whl'
+    wheel_path = WHEEL_DIR / wheel_filename
+    if wheel_path.exists():
+        if _is_valid_wheel(wheel_path.read_bytes(), checksum=checksum):
+            print_notice(f"A valid 'pip' wheel already exists!")
+            return 1
+        else:
+            print_error(f"An invalid 'pip' wheel exists.")
+            os.remove(wheel_path)
 
-        print_notice(f"Writing {wheel_filename!r} to disk")
-        wheel_path.write_bytes(whl)
+    wheel_url = _wheel_url('pip', version)
+    print_notice(f"Downloading {wheel_url!r}")
+    try:
+        with urlopen(wheel_url, cadefault=True) as response:
+            whl = response.read()
+    except URLError as exc:
+        print_error(f"Failed to download {wheel_url!r}: {exc}")
+        return 1
+    if not _is_valid_wheel(whl, checksum=checksum):
+        print_error(f"Failed to validate checksum for {wheel_url!r}!")
+        return 1
 
-    return errors
+    print_notice(f"Writing {wheel_filename!r} to disk")
+    wheel_path.write_bytes(whl)
+    return 0
 
 
-def _get_projects() -> list[tuple[str, str, str]]:
+def _get_pip_details() -> list[tuple[str, str, str]]:
     spec = importlib.util.spec_from_file_location("ensurepip", ENSURE_PIP_INIT)
     ensurepip = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ensurepip)
     try:
-        return ensurepip._PROJECTS
+        return ensurepip._PIP_VERSION, ensurepip._PIP_SHA_256
     except AttributeError:
-        return []
+        return None
 
 
 def _wheel_url(name: str, version: str, /) -> str:
@@ -107,4 +105,4 @@ def _is_valid_wheel(content: bytes, *, checksum: str) -> bool:
 
 
 if __name__ == '__main__':
-    raise SystemExit(download_wheels())
+    raise SystemExit(download_pip_wheel())

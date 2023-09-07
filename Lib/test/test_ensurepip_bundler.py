@@ -14,7 +14,7 @@ import ensurepip
 
 test_tools.skip_if_missing('build')
 with test_tools.imports_under_tool('build'):
-    from bundle_ensurepip_wheels import _wheel_url, download_wheels
+    from bundle_ensurepip_wheels import _wheel_url, download_pip_wheel
 
 
 class TestBundle(EnsurepipMixin, unittest.TestCase):
@@ -41,7 +41,7 @@ class TestBundle(EnsurepipMixin, unittest.TestCase):
             unittest.mock.patch.object(ensurepip, '_PIP_SHA_256', self.checksum),
         ):
             urllib.request.install_opener(MockedHTTPSOpener())
-            download_wheels()
+            download_pip_wheel()
         stderr = stderr.getvalue()
         self.assertIn("Failed to validate checksum for", stderr)
 
@@ -55,7 +55,7 @@ class TestBundle(EnsurepipMixin, unittest.TestCase):
                 unittest.mock.patch.object(ensurepip, '_PIP_VERSION', '1.2.3'),
                 unittest.mock.patch.object(ensurepip, '_PIP_SHA_256', self.checksum),
             ):
-                download_wheels()
+                download_pip_wheel()
             stderr = stderr.getvalue()
             self.assertIn("A valid 'pip' wheel already exists!", stderr)
 
@@ -76,7 +76,7 @@ class TestBundle(EnsurepipMixin, unittest.TestCase):
                 unittest.mock.patch.object(ensurepip, '_PIP_SHA_256', self.checksum),
             ):
                 urllib.request.install_opener(MockedHTTPSOpener())
-                download_wheels()
+                download_pip_wheel()
             self.assertEqual(Path(tmpdir, pip_filename).read_bytes(), self.contents)
         stderr = stderr.getvalue()
         self.assertIn("Downloading 'pip-1.2.3-py3-none-any.whl'", stderr)

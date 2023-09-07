@@ -24,20 +24,22 @@ class TestPackages(unittest.TestCase):
                   unittest.mock.patch.object(ensurepip, '_WHEEL_PKG_DIR', tmpdir)):
                 self.assertEqual(ensurepip.version(), '1.2.3b1')
 
-    def test_get_packages_no_dir(self):
-        # Test _get_packages() without a wheel package directory
+    def test_get_pip_info_no_dir(self):
+        # Test _get_pip_info() without a wheel package directory
         with (unittest.mock.patch.object(ensurepip, '_PACKAGES', None),
               unittest.mock.patch.object(ensurepip, '_WHEEL_PKG_DIR', None)):
-            packages = ensurepip._get_packages()
+            pip_info = ensurepip._get_pip_info()
 
             # when bundled wheel packages are used, we get _PIP_VERSION
             self.assertEqual(ensurepip._PIP_VERSION, ensurepip.version())
 
         # use bundled wheel packages
-        self.assertIsNotNone(packages['pip'].wheel_name)
+        self.assertEqual(pip_info['filename'],
+                         f'pip-{ensurepip._PIP_VERSION}-py3-none-any.whl')
+        self.assertTrue(pip_info['bundled'])
 
-    def test_get_packages_with_dir(self):
-        # Test _get_packages() with a wheel package directory
+    def test_get_pip_info_with_dir(self):
+        # Test _get_pip_info() with a wheel package directory
         pip_filename = "pip-20.2.2-py2.py3-none-any.whl"
 
         with tempfile.TemporaryDirectory() as tmpdir:

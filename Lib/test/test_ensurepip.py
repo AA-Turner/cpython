@@ -95,6 +95,19 @@ class TestBootstrap(EnsurepipMixin, unittest.TestCase):
         additional_paths = self.run_pip.call_args[0][1]
         self.assertEqual(len(additional_paths), 1)
 
+    def test_replacement_wheel_bootstrapping(self):
+        pip_filename = f'pip-{ensurepip._PIP_VERSION}-py3-none-any.whl'
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            self.touch(tmpdir, pip_filename)
+
+            with (unittest.mock.patch.object(ensurepip, '_PACKAGES', None),
+                  unittest.mock.patch.object(ensurepip, '_WHEEL_PKG_DIR', tmpdir)):
+                ensurepip.bootstrap()
+
+        additional_paths = self.run_pip.call_args[0][1]
+        self.assertEqual(additional_paths[-1], pip_filename)
+
     def test_bootstrapping_with_root(self):
         ensurepip.bootstrap(root="/foo/bar/")
 

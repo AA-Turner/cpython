@@ -229,13 +229,7 @@ PROGRESS_MIN_TIME = 30.0   # seconds
 # Beware this can't generally be done for any directory with sub-tests as the
 # __init__.py may do things which alter what tests are to be run.
 
-SPLITTESTDIRS = {
-    "test_asyncio",
-    "test_concurrent_futures",
-    "test_multiprocessing_fork",
-    "test_multiprocessing_forkserver",
-    "test_multiprocessing_spawn",
-}
+SPLITTESTDIRS = {}
 
 
 def findtestdir(path=None):

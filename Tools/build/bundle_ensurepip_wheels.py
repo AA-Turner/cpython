@@ -39,13 +39,12 @@ def print_error(message: str) -> None:
 def download_pip_wheel() -> int:
     """Download wheels into bundle if they are not there yet."""
 
-    details = _get_pip_details()
-    if details is None:
+    try:
+        version, checksum = _get_pip_details()
+    except (AttributeError, TypeError):
         print_error("Could not find '_PIP_VERSION' and '_PIP_SHA_256' in "
                     f"{ENSURE_PIP_INIT}.")
         return 1
-
-    version, checksum = details
 
     wheel_filename = f'pip-{version}-py3-none-any.whl'
     wheel_path = WHEEL_DIR / wheel_filename
@@ -60,7 +59,7 @@ def download_pip_wheel() -> int:
     wheel_url = _wheel_url('pip', version)
     print_notice(f"Downloading {wheel_url!r}")
     try:
-        with urlopen(wheel_url, cadefault=True) as response:
+        with urlopen(wheel_url) as response:
             whl = response.read()
     except URLError as exc:
         print_error(f"Failed to download {wheel_url!r}: {exc}")
@@ -78,10 +77,7 @@ def _get_pip_details() -> list[tuple[str, str, str]]:
     spec = importlib.util.spec_from_file_location("ensurepip", ENSURE_PIP_INIT)
     ensurepip = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ensurepip)
-    try:
-        return ensurepip._PIP_VERSION, ensurepip._PIP_SHA_256
-    except AttributeError:
-        return None
+    return ensurepip._PIP_VERSION, ensurepip._PIP_SHA_256
 
 
 def _wheel_url(name: str, version: str, /) -> str:

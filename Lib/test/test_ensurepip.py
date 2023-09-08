@@ -20,14 +20,12 @@ class TestPackages(unittest.TestCase):
         # Test version()
         with tempfile.TemporaryDirectory() as tmpdir:
             self.touch(tmpdir, "pip-1.2.3b1-py2.py3-none-any.whl")
-            with (unittest.mock.patch.object(ensurepip, '_PACKAGES', None),
-                  unittest.mock.patch.object(ensurepip, '_WHEEL_PKG_DIR', tmpdir)):
+            with unittest.mock.patch.object(ensurepip, '_WHEEL_PKG_DIR', tmpdir):
                 self.assertEqual(ensurepip.version(), '1.2.3b1')
 
     def test_get_pip_info_no_dir(self):
         # Test _get_pip_info() without a wheel package directory
-        with (unittest.mock.patch.object(ensurepip, '_PACKAGES', None),
-              unittest.mock.patch.object(ensurepip, '_WHEEL_PKG_DIR', None)):
+        with unittest.mock.patch.object(ensurepip, '_WHEEL_PKG_DIR', None):
             pip_info = ensurepip._get_pip_info()
 
             # when bundled wheel packages are used, we get _PIP_VERSION
@@ -47,16 +45,14 @@ class TestPackages(unittest.TestCase):
             # not used, make sure that it's ignored
             self.touch(tmpdir, "wheel-0.34.2-py2.py3-none-any.whl")
 
-            with (unittest.mock.patch.object(ensurepip, '_PACKAGES', None),
-                  unittest.mock.patch.object(ensurepip, '_WHEEL_PKG_DIR', tmpdir)):
-                packages = ensurepip._get_packages()
-
-            self.assertEqual(packages['pip'].version, '20.2.2')
-            self.assertEqual(packages['pip'].wheel_path,
-                             os.path.join(tmpdir, pip_filename))
+            with unittest.mock.patch.object(ensurepip, '_WHEEL_PKG_DIR', tmpdir):
+                pip_info = ensurepip._get_pip_info()
+                self.assertEqual(pip_info["version"], '20.2.2')
+                self.assertEqual(pip_info["filename"], pip_filename)
 
             # wheel package is ignored
-            self.assertEqual(sorted(packages), ['pip'])
+            expected = {"version": '20.2.2', "filename": pip_filename, "bundled": True}
+            self.assertDictEqual(pip_info, expected)
 
 
 class EnsurepipMixin:
@@ -77,6 +73,11 @@ class EnsurepipMixin:
         patched_os.devnull = real_devnull
         patched_os.path = os.path
         self.os_environ = patched_os.environ = os.environ.copy()
+
+        # ensure the pip wheel exists
+        bundled_dir = os.path.join(test.support.STDLIB_DIR, 'ensurepip', '_bundled')
+        pip_filename = f'pip-{ensurepip._PIP_VERSION}-py3-none-any.whl'
+        open(os.path.join(bundled_dir, pip_filename), "wb").close()
 
 
 class TestBootstrap(EnsurepipMixin, unittest.TestCase):
@@ -99,14 +100,13 @@ class TestBootstrap(EnsurepipMixin, unittest.TestCase):
         pip_filename = f'pip-{ensurepip._PIP_VERSION}-py3-none-any.whl'
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            self.touch(tmpdir, pip_filename)
+            open(os.path.join(tmpdir, pip_filename), "wb").close()
 
-            with (unittest.mock.patch.object(ensurepip, '_PACKAGES', None),
-                  unittest.mock.patch.object(ensurepip, '_WHEEL_PKG_DIR', tmpdir)):
+            with unittest.mock.patch.object(ensurepip, '_WHEEL_PKG_DIR', tmpdir):
                 ensurepip.bootstrap()
 
         additional_paths = self.run_pip.call_args[0][1]
-        self.assertEqual(additional_paths[-1], pip_filename)
+        self.assertIn(pip_filename, additional_paths[-1])
 
     def test_bootstrapping_with_root(self):
         ensurepip.bootstrap(root="/foo/bar/")

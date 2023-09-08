@@ -29,7 +29,8 @@ class TestBundle(EnsurepipMixin, unittest.TestCase):
 
     def test_invalid_checksum(self):
         class MockedHTTPSOpener:
-            def open(self, url, data, timeout):
+            @staticmethod
+            def open(url, data, timeout):
                 assert 'pip' in url
                 assert data is None  # HTTP GET
                 # Intentionally corrupt the wheel:
@@ -63,7 +64,8 @@ class TestBundle(EnsurepipMixin, unittest.TestCase):
         pip_filename = "pip-1.2.3-py3-none-any.whl"
 
         class MockedHTTPSOpener:
-            def open(self, url, data, timeout):
+            @staticmethod
+            def open(url, data, timeout):
                 assert 'pip' in url
                 assert data is None  # HTTP GET
                 return BytesIO(self.contents)

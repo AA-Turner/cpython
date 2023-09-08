@@ -41,18 +41,12 @@ def _find_wheel_pkg_dir_pip():
 
 
 def _get_pip_info():
-    global _PACKAGE
-    if _PACKAGE is not None:
-        return _PACKAGE
-
-    filename = f"pip-{_PIP_VERSION}-py3-none-any.whl"
-    details = {"version": _PIP_VERSION, "filename": filename, "bundled": True}
     # only used the wheel package directory if we found pip
-    if _WHEEL_PKG_DIR and (pkg := _find_wheel_pkg_dir_pip()) is not None:
-        details = pkg
-    _PACKAGE = details
-    return _PACKAGE
-_PACKAGE = None
+    pkg = _find_wheel_pkg_dir_pip()
+    if _WHEEL_PKG_DIR and pkg is not None:
+        return pkg
+    filename = f"pip-{_PIP_VERSION}-py3-none-any.whl"
+    return {"version": _PIP_VERSION, "filename": filename, "bundled": True}
 
 
 def _run_pip(args, additional_paths=None):

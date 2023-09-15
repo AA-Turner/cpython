@@ -44,6 +44,44 @@ def status(message, modal=False, info=None):
     return decorated_fxn
 
 
+def get_patchlevel_version_info():
+    patchlevel_h = os.path.join(SRCDIR, 'Include', 'patchlevel.h')
+
+    try:
+        with open(patchlevel_h, encoding="utf-8") as f:
+            patchlevel = f.read()
+    except FileNotFoundError:
+        return sys.version_info[:4]
+
+    d = {}
+    skip = True
+    for line in patchlevel.splitlines():
+        if skip:
+            if line == "/*--start constants--*/":
+                skip = False
+            continue
+
+        for name in ("MAJOR_VERSION", "MINOR_VERSION", "MICRO_VERSION",
+                     "RELEASE_LEVEL"):
+            if line.startswith(define := f"#define PY_{name}"):
+                d[name] = line.removeprefix(define).lstrip(" ")
+                break
+
+        if len(d) == 4:
+            break
+
+    major = int(d['MAJOR_VERSION'])
+    minor = int(d['MINOR_VERSION'])
+    micro = int(d['MICRO_VERSION'])
+    level = {
+        'PY_RELEASE_LEVEL_ALPHA': 'alpha',
+        'PY_RELEASE_LEVEL_BETA':  'beta',
+        'PY_RELEASE_LEVEL_GAMMA': 'rc',
+        'PY_RELEASE_LEVEL_FINAL': 'final',
+    }[d['RELEASE_LEVEL']]
+    return major, minor, micro, level
+
+
 def get_git_branch():
     """Get the symbolic name for the current git branch"""
     cmd = "git rev-parse --abbrev-ref HEAD".split()
@@ -102,11 +140,11 @@ def get_base_branch():
         # Not a git checkout, so there's no base branch
         return None
     upstream_remote = get_git_upstream_remote()
-    version = sys.version_info
-    if version.releaselevel == 'alpha':
+    major, minor, micro, level = get_patchlevel_version_info()
+    if level == 'alpha':
         base_branch = get_git_remote_default_branch(upstream_remote)
     else:
-        base_branch = "{0.major}.{0.minor}".format(version)
+        base_branch = f"{major}.{minor}"
     this_branch = get_git_branch()
     if this_branch is None or this_branch == base_branch:
         # Not on a git PR branch, so there's no base branch
@@ -320,6 +358,7 @@ if __name__ == '__main__':
                         help='Perform pass/fail checks')
     args = parser.parse_args()
     if args.ci:
+        SRCDIR = os.getcwd()
         ci(args.ci)
     else:
         main()

@@ -323,11 +323,6 @@ PROGRESS_MIN_TIME = 30.0   # seconds
 # __init__.py may do things which alter what tests are to be run.
 
 SPLITTESTDIRS: set[TestName] = {
-    "test_asyncio",
-    "test_concurrent_futures",
-    "test_multiprocessing_fork",
-    "test_multiprocessing_forkserver",
-    "test_multiprocessing_spawn",
 }
 
 

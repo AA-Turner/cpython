@@ -6,6 +6,7 @@ import shutil
 import os.path
 import subprocess
 import sysconfig
+from pathlib import Path
 
 import reindent
 import untabify
@@ -14,10 +15,10 @@ import untabify
 # Excluded directories which are copies of external libraries:
 # don't check their coding style
 EXCLUDE_DIRS = [
-    os.path.join('Modules', '_decimal', 'libmpdec'),
-    os.path.join('Modules', 'expat'),
-    os.path.join('Modules', 'zlib'),
-    ]
+    'Modules/_decimal/libmpdec',
+    'Modules/expat',
+    'Modules/zlib',
+]
 SRCDIR = sysconfig.get_config_var('srcdir')
 
 
@@ -159,6 +160,17 @@ def changed_files(base_branch=None):
     return filenames2
 
 
+@status("Getting the list of all files",
+        info=lambda x: n_files_str(len(x)))
+def all_files():
+    return [
+        file for path in Path(SRCDIR).rglob("*")
+        if (file := path.resolve().relative_to(SRCDIR).as_posix())
+           and not any(file.startswith(path) for path in EXCLUDE_DIRS)
+    ]
+
+
+
 def report_modified_files(file_paths):
     count = len(file_paths)
     if count == 0:
@@ -175,6 +187,15 @@ _PYTHON_FILES_WITH_TABS = frozenset({
     'Tools/c-analyzer/cpython/_parser.py',
 })
 
+#: Python files with bad syntax
+_PYTHON_SYNTAX_PROBLEMS = frozenset({
+    'Lib/test/tokenizedata/bad_coding.py',
+    'Lib/test/tokenizedata/bad_coding2.py',
+    'Lib/test/tokenizedata/badsyntax_3131.py',
+    'Lib/test/tokenizedata/coding20731.py',
+    'Lib/test/badsyntax_pep3120.py'
+})
+
 
 @status("Fixing Python file whitespace", info=report_modified_files)
 def normalize_whitespace(file_paths):
@@ -184,7 +205,7 @@ def normalize_whitespace(file_paths):
         path for path in file_paths
         if (
             path.endswith('.py')
-            and path not in _PYTHON_FILES_WITH_TABS
+            and path not in _PYTHON_FILES_WITH_TABS | _PYTHON_SYNTAX_PROBLEMS
             and reindent.check(os.path.join(SRCDIR, path))
         )
     ]
@@ -264,8 +285,7 @@ def ci(pull_request):
     if pull_request == 'false':
         print('Not a pull request; skipping')
         return
-    base_branch = get_base_branch()
-    file_paths = changed_files(base_branch)
+    file_paths = all_files()
     python_files = [fn for fn in file_paths if fn.endswith('.py')]
     c_files = [fn for fn in file_paths if fn.endswith(('.c', '.h'))]
     doc_files = [fn for fn in file_paths if fn.startswith('Doc') and
@@ -320,6 +340,7 @@ if __name__ == '__main__':
                         help='Perform pass/fail checks')
     args = parser.parse_args()
     if args.ci:
+        SRCDIR = Path(__file__).resolve().parents[2].as_posix()
         ci(args.ci)
     else:
         main()

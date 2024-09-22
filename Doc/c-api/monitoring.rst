@@ -1,6 +1,6 @@
 .. highlight:: c
 
-.. _monitoring:
+.. _c-api-monitoring:
 
 Monitoring C API
 ================

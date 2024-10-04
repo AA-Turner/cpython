@@ -19,7 +19,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: config.cache
-        key: ${{ github.job }}-${{ runner.os }}-${{ env.IMAGE_VERSION }}-${{ hashFiles('configure', 'configure.ac', '.github/workflows/build.yml') }}
+        key: ${{ github.job }}-${{ runner.os }}-${{ env.IMAGE_VERSION }}-${{ hashFiles('configure', 'configure.ac') }}
     - name: Install Dependencies
       run: |
         sudo ./.github/workflows/posix-deps-apt.sh

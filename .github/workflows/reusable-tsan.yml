@@ -1,24 +1,14 @@
 on:
-  workflow_call:
-    inputs:
-      config_hash:
-        required: true
-        type: string
-      options:
-        required: true
-        type: string
-      suppressions_path:
-        description: 'A repo relative path to the suppressions file'
-        required: true
-        type: string
-      tsan_logs_artifact_name:
-        description: 'Name of the TSAN logs artifact. Must be unique for each job.'
-        required: true
-        type: string
+  workflow_dispatch:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   build_tsan_reusable:
-    name: 'Thread sanitizer'
+    name: 'Thread sanitizer (free-threading)'
     runs-on: ubuntu-22.04
     timeout-minutes: 60
     steps:
@@ -29,7 +19,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: config.cache
-        key: ${{ github.job }}-${{ runner.os }}-${{ env.IMAGE_VERSION }}-${{ inputs.config_hash }}
+        key: ${{ github.job }}-${{ runner.os }}-${{ env.IMAGE_VERSION }}-${{ hashFiles('configure', 'configure.ac', '.github/workflows/build.yml') }}
     - name: Install Dependencies
       run: |
         sudo ./.github/workflows/posix-deps-apt.sh
@@ -45,7 +35,7 @@ jobs:
         sudo sysctl -w vm.mmap_rnd_bits=28
     - name: TSAN Option Setup
       run: |
-        echo "TSAN_OPTIONS=log_path=${GITHUB_WORKSPACE}/tsan_log suppressions=${GITHUB_WORKSPACE}/${{ inputs.suppressions_path }} handle_segv=0" >> $GITHUB_ENV
+        echo "TSAN_OPTIONS=log_path=${GITHUB_WORKSPACE}/tsan_log suppressions=${GITHUB_WORKSPACE}/Tools/tsan/suppressions_free_threading.txt handle_segv=0" >> $GITHUB_ENV
         echo "CC=clang" >> $GITHUB_ENV
         echo "CXX=clang++" >> $GITHUB_ENV
     - name: Add ccache to PATH
@@ -57,13 +47,20 @@ jobs:
         save: ${{ github.event_name == 'push' }}
         max-size: "200M"
     - name: Configure CPython
-      run: ${{ inputs.options }}
+      run: ./configure --config-cache --disable-gil --with-thread-sanitizer --with-pydebug
     - name: Build CPython
       run: make -j4
     - name: Display build info
       run: make pythoninfo
+    - name: Install requests
+      run: ./python -m pip install "requests>=2.30.0"
     - name: Tests
-      run: ./python -m test --tsan -j4
+      run: |
+        sudo mkdir -p /cores
+        sudo chmod 777 /cores
+        sudo bash -c 'echo "/cores/%e.%p.%t" > /proc/sys/kernel/core_pattern'
+        ulimit -c unlimited
+        ./python -E -u -X dev -X warn_default_encoding -Werror ./test_requests_crasher.py
     - name: Display TSAN logs
       if: always()
       run: find ${GITHUB_WORKSPACE} -name 'tsan_log.*' | xargs head -n 1000
@@ -71,6 +68,6 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.tsan_logs_artifact_name }}
+        name: tsan-logs-free-threading
         path: tsan_log.*
         if-no-files-found: ignore

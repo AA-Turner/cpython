@@ -92,4 +92,4 @@ jobs:
         sudo chmod 777 /cores
         sudo bash -c 'echo "/cores/%e.%p.%t" > /proc/sys/kernel/core_pattern'
         ulimit -c unlimited
-        ./python -E -u -X dev -X warn_default_encoding -Werror ./test_requests_crasher.py
+        ./python -E -u -X dev -X warn_default_encoding -Werror ${GITHUB_WORKSPACE}/test_requests_crasher.py

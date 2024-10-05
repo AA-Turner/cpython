@@ -30,7 +30,7 @@ jobs:
         cp ./.github/workflows/build.sh ./bisect_check.sh
         git bisect start
         git bisect bad $(git rev-parse HEAD)
-        git bisect good 153b3f75306b5d26e29ea157105d0fdc247ef853
+        git bisect good 716ec4bfcf1a564db9936122c442baa99f9c4a8c
         BISECT_OUTPUT=$(git bisect run ./bisect_check.sh)
         echo "$BISECT_OUTPUT"
         FIRST_BAD_COMMIT=$(git rev-parse bisect/bad)

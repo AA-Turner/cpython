@@ -31,6 +31,7 @@ jobs:
         set -x
         cp ./test_crasher.py ./crasher.py
         cp ./.github/workflows/build.sh ./bisect_check.sh
+        sudo chmod 777 ./crasher.py ./bisect_check.sh
         git rev-parse --verify --quiet 716ec4bfcf1a564db9936122c442baa99f9c4a8c^{commit}
         git bisect start
         git bisect bad $(git rev-parse HEAD)

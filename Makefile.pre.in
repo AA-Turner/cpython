@@ -2172,6 +2172,7 @@ pythoninfo: all
 
 .PHONY: pythoninfo
 runcrash: all
+		$(RUNSHARED) $(HOSTRUNNER) ./$(BUILDPYTHON) -VV
 		$(RUNSHARED) $(HOSTRUNNER) ./$(BUILDPYTHON) ./test_crasher.py
 
 QUICKTESTOPTS=	-x test_subprocess test_io \

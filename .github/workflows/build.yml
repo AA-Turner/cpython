@@ -10,16 +10,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-22.04
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
     - uses: actions/checkout@v4
-    - name: Runner image version
-      run: echo "IMAGE_VERSION=${ImageVersion}" >> $GITHUB_ENV
-    - name: Restore config.cache
-      uses: actions/cache@v4
-      with:
-        path: config.cache
-        key: ${{ github.job }}-${{ runner.os }}-${{ env.IMAGE_VERSION }}-${{ hashFiles('configure', 'configure.ac') }}
     - name: Install Dependencies
       run: |
         sudo ./.github/workflows/posix-deps-apt.sh
@@ -31,30 +24,37 @@ jobs:
         sudo update-alternatives --set clang /usr/bin/clang-17
         sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-17 100
         sudo update-alternatives --set clang++ /usr/bin/clang++-17
-    - name: Add ccache to PATH
+    - name: Run bisect with check command bash
       run: |
-        echo "PATH=/usr/lib/ccache:$PATH" >> $GITHUB_ENV
-    - name: Configure ccache action
-      uses: hendrikmuhs/ccache-action@v1.2
+        cp ./test_crasher.py ./crasher.py
+        cp ./.github/workflows/build.sh ./bisect_check.sh
+        git bisect start
+        git bisect bad $(git rev-parse HEAD)
+        git bisect good 153b3f75306b5d26e29ea157105d0fdc247ef853
+        BISECT_OUTPUT=$(git bisect run ./bisect_check.sh)
+        echo "$BISECT_OUTPUT"
+        FIRST_BAD_COMMIT=$(git rev-parse bisect/bad)
+        git bisect log >> bisect_log.txt
+        git bisect reset
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Bisect Log" >> $GITHUB_STEP_SUMMARY
+        cat bisect_log.txt >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Bisect result" >> $GITHUB_STEP_SUMMARY
+        if [[ -z "$FIRST_BAD_COMMIT" ]]; then
+          echo "No bad commit found."
+          echo "No bad commit found." >> $GITHUB_STEP_SUMMARY
+        else
+          DIFF_URL="https://github.com/aa-turner/cpython/commit/${FIRST_BAD_COMMIT}"
+          echo "FIRST_BAD_COMMIT=$FIRST_BAD_COMMIT" >> $GITHUB_ENV
+          echo "FIRST_BAD_COMMIT: [$FIRST_BAD_COMMIT]($DIFF_URL)" >> $GITHUB_STEP_SUMMARY
+          ERROR_LOG=$(echo "$BISECT_OUTPUT" | awk '/first bad commit: first commit that fails/{flag=1; next} /Bisecting:/{flag=0} flag')
+          echo "### Error log:" >> $GITHUB_STEP_SUMMARY
+          echo "$ERROR_LOG" >> $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: Upload bisect_log.txt
+      uses: actions/upload-artifact@v4.3.1
       with:
-        save: ${{ github.event_name == 'push' }}
-        max-size: "200M"
-    - name: Configure CPython
-      run: ./configure --config-cache --with-pydebug
-    - name: Build CPython
-      run: make -j4
-    - name: Display build info
-      run: make pythoninfo
-    - name: Tests
-      run: |
-        sudo mkdir -p /cores
-        sudo chmod 777 /cores
-        sudo bash -c 'echo "/cores/%e.%p.%t" > /proc/sys/kernel/core_pattern'
-        ulimit -c unlimited
-        make runcrash
-        ./python -E -u -X dev -X warn_default_encoding -Werror ./test_crasher.py
-    - uses: actions/upload-artifact@master
-      if: failure()
-      with:
-        name: crashes
-        path: /cores
+        name: bisect_log
+        path: bisect_log.txt

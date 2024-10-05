@@ -8,4 +8,7 @@ if __name__ == '__main__':
     obj = Baz.__dict__['__new__']
     assert isinstance(obj, staticmethod)
     getattr(obj, '__annotations__', None)
-    obj.__annotations__
+    try:
+        obj.__annotations__
+    except AttributeError:
+        pass

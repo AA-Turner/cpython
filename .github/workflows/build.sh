@@ -1,4 +1,4 @@
-set -euxo pipefail
+set -eux
 
 ./configure --config-cache --with-pydebug
 make -j4

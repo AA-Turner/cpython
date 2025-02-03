@@ -4,6 +4,7 @@
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size);
 
+
 static PyObject* _fuzz_run(PyObject* self, PyObject* args) {
     const char* buf;
     Py_ssize_t size;

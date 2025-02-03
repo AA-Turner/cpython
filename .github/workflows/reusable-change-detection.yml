@@ -101,7 +101,9 @@ jobs:
     # or when someone triggers a manual workflow run.
     - name: Compute changed files
       id: changes
-      run: python Tools/build/compute-changes.py "${branch_base}" "${branch_pr}"
+      run: |
+        python Tools/build/compute-changes.py "${branch_base}" "${branch_pr}"
+        cat $GITHUB_OUTPUT
 
     - name: Compute hash for config cache key
       id: config-hash

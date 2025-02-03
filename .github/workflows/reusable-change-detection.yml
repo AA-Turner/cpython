@@ -82,8 +82,7 @@ jobs:
         set -eux
 
         # Fetch enough history to find a common ancestor commit (aka merge-base):
-        FETCH_DEPTH=$(( ${{ github.event.pull_request.commits }} + 1 ))
-        git fetch origin "${refspec_pr}" --depth="${FETCH_DEPTH}" \
+        git fetch origin "${refspec_pr}" --depth=$(( commits + 1 )) \
           --no-tags --prune --no-recurse-submodules
 
         # This should get the oldest commit in the local fetched history (which may not be the commit the PR branched from):
@@ -95,6 +94,7 @@ jobs:
           --no-tags --prune --no-recurse-submodules
       env:
         branch_pr: 'origin/${{ github.event.pull_request.head.ref }}'
+        commits: ${{ github.event.pull_request.commits }}
         refspec_base: '+${{ github.event.pull_request.base.sha }}:remotes/origin/${{ github.event.pull_request.base.ref }}'
         refspec_pr: '+${{ github.event.pull_request.head.sha }}:remotes/origin/${{ github.event.pull_request.head.ref }}'
 

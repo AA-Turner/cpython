@@ -57,6 +57,7 @@ def compute_changes(ref_a: str = "main", ref_b: str = "HEAD"):
 
 def get_changed_files(ref_a: str, ref_b: str) -> Set[Path]:
     """List the files changed between two Git refs, filtered by change type."""
+    print("git", "diff", "--name-only", f"{ref_a}...{ref_b}", "--")
     changed_files_result = subprocess.run(
         ("git", "diff", "--name-only", f"{ref_a}...{ref_b}", "--"),
         capture_output=True,

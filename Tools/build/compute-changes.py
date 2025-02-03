@@ -164,6 +164,10 @@ def process_target_branch(outputs: Outputs, git_branch: str) -> Outputs:
     if git_branch != "main":
         outputs.run_ci_fuzz = False
 
+    if os.environ.get('GITHUB_EVENT_NAME', '').lower() == 'workflow_dispatch':
+        outputs.run_docs = True
+        outputs.run_win_msi = True
+
     return outputs
 
 

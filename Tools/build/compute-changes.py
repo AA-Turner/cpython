@@ -47,6 +47,8 @@ def compute_changes():
     if outputs.run_win_msi:
         print("Build Windows MSI")
 
+    print(outputs)
+
     write_github_output(outputs)
 
 

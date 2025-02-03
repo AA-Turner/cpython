@@ -29,8 +29,12 @@ class Outputs:
 
 def compute_changes(ref_a: str = "main", ref_b: str = "HEAD"):
     target_branch = get_git_base_branch()
-    changed_files = get_changed_files(ref_a, ref_b)
-    outputs = process_changed_files(changed_files)
+    if target_branch:
+        # Getting changed files only makes sense on a pull request
+        changed_files = get_changed_files(ref_a, ref_b)
+        outputs = process_changed_files(changed_files)
+    else:
+        outputs = Outputs()
     outputs = process_target_branch(outputs, target_branch)
 
     if outputs.run_tests:
@@ -138,7 +142,7 @@ def process_changed_files(changed_files: Set[Path]) -> Outputs:
 
 
 def process_target_branch(outputs: Outputs, git_branch: str) -> Outputs:
-    if not os.environ.get("GITHUB_BASE_REF", ""):
+    if not git_branch:
         outputs.run_tests = True
 
     # Check if we should run hypothesis tests

@@ -35,7 +35,7 @@ def compute_changes():
         )
         outputs = process_changed_files(files)
     else:
-        outputs = Outputs()
+        outputs = Outputs(run_tests=True)
     outputs = process_target_branch(outputs, target_branch)
 
     if outputs.run_tests:

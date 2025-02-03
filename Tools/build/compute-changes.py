@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 from dataclasses import dataclass
 from collections.abc import Set
 from pathlib import Path
@@ -26,9 +27,9 @@ class Outputs:
     run_win_msi: bool = False
 
 
-def compute_changes():
+def compute_changes(ref_a: str = "main", ref_b: str = "HEAD"):
     target_branch = get_git_base_branch()
-    changed_files = get_changed_files()
+    changed_files = get_changed_files(ref_a, ref_b)
     outputs = process_changed_files(changed_files)
     outputs = process_target_branch(outputs, target_branch)
 
@@ -54,7 +55,7 @@ def compute_changes():
     write_github_output(outputs)
 
 
-def get_changed_files(ref_a: str = "main", ref_b: str = "HEAD") -> Set[Path]:
+def get_changed_files(ref_a: str, ref_b: str) -> Set[Path]:
     """List the files changed between two Git refs, filtered by change type."""
     changed_files_result = subprocess.run(
         ("git", "diff", "--name-only", f"{ref_a}...{ref_b}", "--"),
@@ -176,4 +177,9 @@ def bool_lower(value: bool, /) -> str:
 
 
 if __name__ == "__main__":
-    compute_changes()
+    try:
+        base_ref, pr_ref = sys.argv[1:3]
+    except ValueError:
+        compute_changes()
+    else:
+        compute_changes(base_ref, pr_ref)

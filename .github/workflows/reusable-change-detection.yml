@@ -79,6 +79,8 @@ jobs:
     - name: Fetch commits to get branch diff
       if: github.event_name == 'pull_request'
       run: |
+        set -eux
+
         # Fetch enough history to find a common ancestor commit (aka merge-base):
         git fetch origin "${refspec_pr}" --depth=$(( commits + 1 )) \
           --no-tags --prune --no-recurse-submodules

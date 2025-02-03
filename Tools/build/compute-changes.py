@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 import subprocess
-import sys
 from dataclasses import dataclass
 from collections.abc import Set
 from pathlib import Path
@@ -27,12 +26,14 @@ class Outputs:
     run_win_msi: bool = False
 
 
-def compute_changes(ref_a: str = "main", ref_b: str = "HEAD"):
+def compute_changes():
     target_branch, head_branch = git_branches()
     if target_branch and head_branch:
         # Getting changed files only makes sense on a pull request
-        changed_files = get_changed_files(ref_a, ref_b)
-        outputs = process_changed_files(changed_files)
+        files = get_changed_files(
+            f"origin/{target_branch}", f"origin/{head_branch}"
+        )
+        outputs = process_changed_files(files)
     else:
         outputs = Outputs()
     outputs = process_target_branch(outputs, target_branch)
@@ -70,7 +71,7 @@ def git_branches() -> tuple[str, str]:
     return target_branch, head_branch
 
 
-def get_changed_files(ref_a: str, ref_b: str) -> Set[Path]:
+def get_changed_files(ref_a: str = "main", ref_b: str = "HEAD") -> Set[Path]:
     """List the files changed between two Git refs, filtered by change type."""
     print("git", "diff", "--name-only", f"{ref_a}...{ref_b}", "--")
     changed_files_result = subprocess.run(
@@ -186,9 +187,4 @@ def bool_lower(value: bool, /) -> str:
 
 
 if __name__ == "__main__":
-    try:
-        base_ref, pr_ref = sys.argv[1:3]
-    except ValueError:
-        compute_changes()
-    else:
-        compute_changes(base_ref, pr_ref)
+    compute_changes()

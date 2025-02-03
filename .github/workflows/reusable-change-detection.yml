@@ -50,12 +50,6 @@ jobs:
     name: Compute changed files
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      branch_base: 'origin/${{ github.event.pull_request.base.ref }}'
-      branch_pr: 'origin/${{ github.event.pull_request.head.ref }}'
-      commits: ${{ github.event.pull_request.commits }}
-      refspec_base: '+${{ github.event.pull_request.base.sha }}:remotes/origin/${{ github.event.pull_request.base.ref }}'
-      refspec_pr: '+${{ github.event.pull_request.head.sha }}:remotes/origin/${{ github.event.pull_request.head.ref }}'
     outputs:
       config-hash: ${{ steps.config-hash.outputs.hash }}
       run-cifuzz: ${{ steps.changes.outputs.run-cifuzz }}
@@ -96,13 +90,18 @@ jobs:
         # Get all commits since that commit date from the base branch (eg: master or main):
         git fetch origin "${refspec_base}" --shallow-since="${DATE}" \
           --no-tags --prune --no-recurse-submodules
+      env:
+        branch_pr: 'origin/${{ github.event.pull_request.head.ref }}'
+        commits: ${{ github.event.pull_request.commits }}
+        refspec_base: '+${{ github.event.pull_request.base.sha }}:remotes/origin/${{ github.event.pull_request.base.ref }}'
+        refspec_pr: '+${{ github.event.pull_request.head.sha }}:remotes/origin/${{ github.event.pull_request.head.ref }}'
 
     # We only want to run tests on PRs when related files are changed,
     # or when someone triggers a manual workflow run.
     - name: Compute changed files
       id: changes
       run: |
-        python Tools/build/compute-changes.py "${branch_base}" "${branch_pr}"
+        python Tools/build/compute-changes.py
         cat $GITHUB_OUTPUT
 
     - name: Compute hash for config cache key

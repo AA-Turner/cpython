@@ -28,8 +28,8 @@ class Outputs:
 
 
 def compute_changes(ref_a: str = "main", ref_b: str = "HEAD"):
-    target_branch = get_git_base_branch()
-    if target_branch:
+    target_branch, head_branch = git_branches()
+    if target_branch and head_branch:
         # Getting changed files only makes sense on a pull request
         changed_files = get_changed_files(ref_a, ref_b)
         outputs = process_changed_files(changed_files)
@@ -59,6 +59,17 @@ def compute_changes(ref_a: str = "main", ref_b: str = "HEAD"):
     write_github_output(outputs)
 
 
+def git_branches() -> tuple[str, str]:
+    target_branch = os.environ.get("GITHUB_BASE_REF", "")
+    target_branch = target_branch.removeprefix("refs/heads/")
+    print(f"target branch: {target_branch!r}")
+
+    head_branch = os.environ.get("GITHUB_HEAD_REF", "")
+    head_branch = head_branch.removeprefix("refs/heads/")
+    print(f"head branch: {head_branch!r}")
+    return target_branch, head_branch
+
+
 def get_changed_files(ref_a: str, ref_b: str) -> Set[Path]:
     """List the files changed between two Git refs, filtered by change type."""
     print("git", "diff", "--name-only", f"{ref_a}...{ref_b}", "--")
@@ -70,13 +81,6 @@ def get_changed_files(ref_a: str, ref_b: str) -> Set[Path]:
     )
     changed_files = changed_files_result.stdout.strip().splitlines()
     return frozenset(map(Path, filter(None, map(str.strip, changed_files))))
-
-
-def get_git_base_branch() -> str:
-    git_branch = os.environ.get("GITHUB_BASE_REF", "")
-    git_branch = git_branch.removeprefix("refs/heads/")
-    print(f"target branch: {git_branch!r}")
-    return git_branch
 
 
 def process_changed_files(changed_files: Set[Path]) -> Outputs:

@@ -50,6 +50,7 @@ jobs:
       run: |
         python -VVV || true
         .\\python.bat -VVV || true
+        Doc\\make.bat venv
         Doc\\make.bat pydoc-topics
         cp Doc/build/pydoc-topics/topics.py Lib/pydoc_data/topics.py
       shell: bash

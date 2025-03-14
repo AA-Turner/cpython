@@ -126,6 +126,7 @@ jobs:
       run: |
         python -VVV || true
         ${{ env.CPYTHON_BUILDDIR }}/python -VVV || true
+        make -C Doc/ venv
         make -C Doc/ pydoc-topics
         diff -u Doc/build/pydoc-topics/topics.py Lib/pydoc_data/topics.py || true
         cp Doc/build/pydoc-topics/topics.py Lib/pydoc_data/topics.py

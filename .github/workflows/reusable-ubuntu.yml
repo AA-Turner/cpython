@@ -122,6 +122,13 @@ jobs:
     - name: Remount sources writable for tests
       # some tests write to srcdir, lack of pyc files slows down testing
       run: sudo mount "$CPYTHON_RO_SRCDIR" -oremount,rw
+    - name: Rebuild pydoc_topics
+      run: |
+        python -VVV || true
+        ${{ env.CPYTHON_BUILDDIR }}/python -VVV || true
+        make -C Doc/ pydoc-topics
+        diff -u Doc/build/pydoc-topics/topics.py Lib/pydoc_data/topics.py || true
+        cp Doc/build/pydoc-topics/topics.py Lib/pydoc_data/topics.py
     - name: Tests
       working-directory: ${{ env.CPYTHON_BUILDDIR }}
       run: xvfb-run make ci

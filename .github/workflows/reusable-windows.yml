@@ -46,6 +46,13 @@ jobs:
     - name: Display build info  # FIXME(diegorusso): remove the `if`
       if: inputs.arch != 'arm64'
       run: .\\python.bat -m test.pythoninfo
+    - name: Rebuild pydoc_topics
+      run: |
+        python -VVV || true
+        .\\python.bat -VVV || true
+        Doc\\make.bat pydoc-topics
+        cp Doc/build/pydoc-topics/topics.py Lib/pydoc_data/topics.py
+      shell: bash
     - name: Tests  # FIXME(diegorusso): remove the `if`
       if: inputs.arch != 'arm64'
       run: >-

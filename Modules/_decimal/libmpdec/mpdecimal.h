@@ -112,7 +112,7 @@ const char *mpd_version(void);
   #elif defined(__x86_64__)
     #define CONFIG_64
     #define ASM
-  #elif defined(__arm64__)
+  #elif defined(__arm64__) || defined(__aarch64__)
     #define CONFIG_64
     #define ANSI
   #else

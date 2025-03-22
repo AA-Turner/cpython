@@ -1,0 +1,24 @@
+option('stdlib', type: 'combo', choices: ['auto', 'builtin', 'dynamic'], value: 'auto')
+option('gil', type: 'boolean', value: true)
+
+option('hash-algorithm', type: 'combo', choices: ['auto', 'siphash13', 'siphash24', 'fnv'], value: 'auto')
+
+option('ipv6', type: 'feature', value: 'enabled')
+option('doc-strings', type: 'boolean', value: true)
+option('c-locale-coercion', type: 'boolean', value: true)
+option('bits-in-digit', type: 'combo', choices: ['15', '30'], value: '30')
+
+option('decimal-contextvar', type: 'boolean', value: true)
+option('builtin-hashlib-hashes', type: 'array', choices: ['md5', 'sha1', 'sha2', 'sha3', 'blake2'], value: ['md5', 'sha1', 'sha2', 'sha3', 'blake2'])
+
+option('dbm-lib-order', type: 'array', choices: ['gdbm', 'ndbm', 'bdb'], value: ['gdbm', 'ndbm', 'bdb'])
+# can be python, openssl or a custom cypher suite string
+option('ssl-default-suites', type: 'string', value: 'python')
+option('loadable-sqlite-extensions', type: 'feature')
+
+option('allocator', type: 'combo', choices: ['system', 'mimalloc'], value: 'mimalloc')
+option('system-libmpdec', type: 'feature')
+option('system-expat', type: 'feature')
+
+# Path to the python executable to use when cross building
+option('cross-build-machine-python', type: 'string', value: 'python3')

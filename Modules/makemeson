@@ -1,0 +1,65 @@
+#! /bin/sh
+set -e
+
+# Convert templates into config.c, based on the module
+# definitions found in the file Setup.
+#
+# See Setup for a description of the format of the Setup file.
+#
+# The following edits are made:
+#
+# Copying config.c.in to config.c:
+# - insert an identifying comment at the start
+# - for each <module> mentioned in Setup before *noconfig*:
+#   + insert 'extern PyObject* PyInit_<module>(void);' before MARKER 1
+#   + insert '{"<module>", PyInit_<module>},' before MARKER 2
+
+usage='
+usage: makemeson [-c config.c.in] [-o config.c]
+                 [module] ...'
+config=''
+output=''
+while :
+do
+	case $1 in
+	-c)	shift; config=$1; shift;;
+	-o)	shift; output=$1; shift;;
+	--)	shift; break;;
+	-*)	echo "$usage" 1>&2; exit 2;;
+	*)	break;;
+	esac
+done
+
+# Set default libdir and config if not set by command line
+# (Not all systems have dirname)
+case $0 in
+*/*)	libdir=`echo $0 | sed 's,/[^/]*$,,'`;;
+*)	libdir=.;;
+esac
+case $config in
+'')	config=$libdir/config.c.in;;
+esac
+case $output in
+'')	output=config.c;;
+esac
+
+EXTDECLS=
+INITBITS=
+for mod in $@
+do
+	EXTDECLS="${EXTDECLS}extern PyObject* PyInit_$mod(void);$NL"
+	INITBITS="${INITBITS}    {\"$mod\", PyInit_$mod},$NL"
+done
+
+
+case $config in
+-)  ;;
+*)  sed -e "
+	1i$NL/* Generated automatically from $config by makesetup. */
+	/MARKER 1/i$NL$EXTDECLS
+
+	/MARKER 2/i$NL$INITBITS
+
+	" $config >$output
+    ;;
+esac

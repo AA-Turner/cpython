@@ -18,24 +18,18 @@ __all__ = [
 ]
 
 
-class _LazyImporter:
-    def __getattr__(self, name):
-        if name == "ast":
-            import ast
-            self.ast = ast
-            return ast
-        elif name == "_Stringifier":
-            from ._stringifier import _Stringifier
-            self._Stringifier = _Stringifier
-            return _Stringifier
-        elif name == "functools":
-            import functools
-            self.functools = functools
-            return functools
-        else:
-            raise AttributeError(
-                f"{self.__class__.__name__!r} object has no attribute {name!r}"
-            )
+def _Stringifier(*args, **kwds):
+    # This function replaces itself with the real class when first called
+    global _Stringifier
+    from annotationlib._stringifier import Stringifier as _Stringifier
+    return _Stringifier(*args, **kwds)
+
+
+def _ast_unparse(ast_obj):
+    # This function replaces itself with the real one when first called
+    global _ast_unparse
+    from ast import unparse as _ast_unparse
+    return _ast_unparse(ast_obj)
 
 
 class Format(enum.IntEnum):
@@ -47,7 +41,6 @@ class Format(enum.IntEnum):
 
 _Union = None
 _sentinel = object()
-_laz = _LazyImporter()
 
 # Slots shared by ForwardRef and _Stringifier. The __forward__ names must be
 # preserved for compatibility with the old typing.ForwardRef class. The remaining
@@ -224,7 +217,7 @@ class ForwardRef:
         if self.__arg__ is not None:
             return self.__arg__
         if self.__ast_node__ is not None:
-            self.__arg__ = _laz.ast.unparse(self.__ast_node__)
+            self.__arg__ = _ast_unparse(self.__ast_node__)
             return self.__arg__
         raise AssertionError(
             "Attempted to access '__forward_arg__' on an uninitialized ForwardRef"
@@ -294,7 +287,7 @@ class _StringifierDict(dict):
         self.stringifiers = []
 
     def __missing__(self, key):
-        fwdref = _laz._Stringifier(
+        fwdref = _Stringifier(
             key,
             globals=self.globals,
             owner=self.owner,
@@ -356,7 +349,7 @@ def call_annotate_function(annotate, format, *, owner=None, _is_evaluate=False):
                     name = freevars[i]
                 else:
                     name = "__cell__"
-                fwdref = _laz._Stringifier(name, stringifier_dict=globals)
+                fwdref = _Stringifier(name, stringifier_dict=globals)
                 new_closure.append(types.CellType(fwdref))
             closure = tuple(new_closure)
         else:
@@ -407,7 +400,7 @@ def call_annotate_function(annotate, format, *, owner=None, _is_evaluate=False):
                         name = freevars[i]
                     else:
                         name = "__cell__"
-                    fwdref = _laz._Stringifier(
+                    fwdref = _Stringifier(
                         name,
                         cell=cell,
                         owner=owner,
@@ -587,11 +580,12 @@ def get_annotations(
         raise TypeError(f"{obj!r} is not a module, class, or callable.")
 
     if unwrap is not None:
+        import functools
         while True:
             if hasattr(unwrap, "__wrapped__"):
                 unwrap = unwrap.__wrapped__
                 continue
-            if isinstance(unwrap, _laz.functools.partial):
+            if isinstance(unwrap, functools.partial):
                 unwrap = unwrap.func
                 continue
             break

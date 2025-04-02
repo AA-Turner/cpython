@@ -1,9 +1,9 @@
 import ast
 
-from . import _SLOTS
+from annotationlib import _SLOTS
 
 
-class _Stringifier:
+class Stringifier:
     # Must match the slots on ForwardRef, so we can turn an instance of one into an
     # instance of the other in place.
     __slots__ = _SLOTS

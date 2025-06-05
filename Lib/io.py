@@ -139,7 +139,7 @@ class Writer(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def write(self, data, /):
-        """Write *data* to the output stream and return the number of items written."""
+        """Write *data* to the output stream."""
 
     @classmethod
     def __subclasshook__(cls, C):

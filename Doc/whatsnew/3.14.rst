@@ -1,8 +1,9 @@
+
 ****************************
-  What's new in Python 3.14
+  What's New in Python 3.14
 ****************************
 
-:Editor: Hugo van Kemenade
+:Editor: Adam Turner and Hugo van Kemenade
 
 .. Rules for maintenance:
 
@@ -45,7 +46,7 @@
    when researching a change.
 
 This article explains the new features in Python 3.14, compared to 3.13.
-
+Python 3.14 will be released on 7 October 2025.
 For full details, see the :ref:`changelog <changelog>`.
 
 .. seealso::
@@ -59,60 +60,97 @@ For full details, see the :ref:`changelog <changelog>`.
    so it's worth checking back even after reading earlier versions.
 
 
-Summary -- release highlights
+Summary -- Release Highlights
 =============================
 
 .. This section singles out the most important changes in Python 3.14.
    Brevity is key.
 
-Python 3.14 will be the latest stable release of the Python
-programming language, with a mix of changes to the language, the
-implementation and the standard library.
-
-The biggest changes to the implementation include template strings (:pep:`750`),
+Python 3.14 will be the latest stable release of the Python programming
+language, with a mix of changes to the language, the implementation
+and the standard library.
+The biggest changes include template strings (:pep:`750`),
 deferred evaluation of annotations (:pep:`649`),
 and a new type of interpreter that uses tail calls.
 
-The library changes include the addition of a new :mod:`!annotationlib` module
+The library changes include the addition of a new :mod:`annotationlib` module
 for introspecting and wrapping annotations (:pep:`749`),
-a new :mod:`!compression.zstd` module for Zstandard support (:pep:`784`),
+a new :mod:`compression.zstd` module for Zstandard support (:pep:`784`),
 plus syntax highlighting in the REPL,
 as well as the usual deprecations and removals,
 and improvements in user-friendliness and correctness.
 
+This article doesn't attempt to provide a complete specification
+of all new features, but instead gives a convenient overview.
+For full details refer to the documentation,
+such as the :ref:`Library Reference <library-index>`
+and :ref:`Language Reference <reference-index>`.
+To understand the complete implementation and design rationale for a change,
+refer to the PEP for a particular new feature;
+but note that PEPs usually are not kept up-to-date
+once a feature has been fully implemented.
+See `Porting to Python 3.14`_ for guidance on upgrading from
+earlier versions of Python.
+
+--------------
+
 .. PEP-sized items next.
 
-* :ref:`PEP 779: Free-threaded Python is officially supported <whatsnew314-pep779>`
-* :ref:`PEP 649 and 749: deferred evaluation of annotations <whatsnew314-pep649>`
-* :ref:`PEP 734: Multiple interpreters in the stdlib <whatsnew314-pep734>`
-* :ref:`PEP 741: Python configuration C API <whatsnew314-pep741>`
-* :ref:`PEP 750: Template strings <whatsnew314-pep750>`
-* :ref:`PEP 758: Allow except and except* expressions without parentheses <whatsnew314-pep758>`
-* :ref:`PEP 761: Discontinuation of PGP signatures <whatsnew314-no-more-pgp>`
-* :ref:`PEP 765: Disallow return/break/continue that exit a finally block <whatsnew314-finally-syntaxwarning>`
+Interpreter improvements:
+
+* :pep:`649` and :pep:`749`: :ref:`deferred evaluation of annotations <whatsnew314-deferred-annotations>`
+* :pep:`750`: :ref:`Template strings <whatsnew314-template-string-literals>`
+* :pep:`758`: :ref:`Allow except and except* expressions without parentheses <whatsnew314-bracketless-except>`
 * :ref:`Free-threaded mode improvements <whatsnew314-free-threaded-cpython>`
-* :ref:`PEP 768: Safe external debugger interface for CPython <whatsnew314-pep768>`
-* :ref:`PEP 784: Adding Zstandard to the standard library <whatsnew314-pep784>`
+* :pep:`765`: :ref:`Disallow return/break/continue that exit a finally block <whatsnew314-finally-syntaxwarning>`
+* :pep:`768`: :ref:`Safe external debugger interface for CPython <whatsnew314-remote-debugging>`
 * :ref:`A new type of interpreter <whatsnew314-tail-call>`
+* :ref:`Improved error messages <whatsnew314-improved-error-messages>`
+
+Significant improvements in the standard library:
+
+* :pep:`734`: :ref:`Multiple interpreters in the stdlib <whatsnew314-multiple-interpreters>`
+* :pep:`784`: :ref:`Adding Zstandard to the standard library <whatsnew314-zstandard>`
 * :ref:`Syntax highlighting in the default interactive shell <whatsnew314-pyrepl-highlighting>`,
   and color output in :ref:`unittest <whatsnew314-color-unittest>`,
   :ref:`argparse <whatsnew314-color-argparse>`,
   :ref:`json <whatsnew314-color-json>` and
   :ref:`calendar <whatsnew314-color-calendar>` CLIs
+* The compression package? :ref:`whatsnew314-zstandard`
+* PDB supports remote attach :ref:`whatsnew314-remote-pdb`
+* :ref:`whatsnew314-asyncio-introspection`
+* :ref:`whatsnew314-concurrent-warnings-control`
+* :ref:`whatsnew314-incremental-gc`
+
+C API improvements:
+
+* :pep:`741`: :ref:`Python configuration C API <whatsnew314-capi-config>`
+
+Platform support:
+
+* :pep:`776`: Emscripten
+
+Release changes:
+
+* :pep:`779`: :ref:`Free-threaded Python is officially supported <whatsnew314-free-threaded-not-experimental>`
+* :pep:`761`: :ref:`Discontinuation of PGP signatures <whatsnew314-no-more-pgp>`
 * :ref:`Binary releases for the experimental just-in-time compiler <whatsnew314-jit-compiler>`
+* Android binary releases
 
 
-
-New features
+New Features
 ============
 
-.. _whatsnew314-pep779:
+.. TODO: Sort in line with the summary above.
 
-PEP 779: Free-threaded Python is officially supported
------------------------------------------------------
+
+.. _whatsnew314-free-threaded-not-experimental:
+
+Free-threaded Python is officially supported
+--------------------------------------------
 
 The free-threaded build of Python is now supported and no longer experimental.
-This is the start of phase II where free-threaded Python is officially supported
+This is the start of `phase II`_ where free-threaded Python is officially supported
 but still optional.
 
 We are confident that the project is on the right path, and we appreciate the
@@ -124,18 +162,24 @@ developer community should broadly advertise that free-threading is a supported
 Python build option now and into the future, and that it will not be removed
 without a proper deprecation schedule.
 
-Any decision to transition to phase III, with free-threading as the default or
+Any decision to transition to `phase III`_, with free-threading as the default or
 sole build of Python is still undecided, and dependent on many factors both
 within CPython itself and the community. This decision is for the future.
 
+.. _phase II: https://discuss.python.org/t/37075
+.. _phase III: https://discuss.python.org/t/37075
+
 .. seealso::
-   :pep:`779` and its `acceptance
-   <https://discuss.python.org/t/pep-779-criteria-for-supported-status-for-free-threaded-python/84319/123>`__.
 
-.. _whatsnew314-pep734:
+   :pep:`779`
 
-PEP 734: Multiple interpreters in the stdlib
---------------------------------------------
+   `PEP 779's acceptance <https://discuss.python.org/t/84319/123>`__
+
+
+.. _whatsnew314-multiple-interpreters:
+
+Multiple interpreters in the standard library
+---------------------------------------------
 
 The CPython runtime supports running multiple copies of Python in the
 same process simultaneously and has done so for over 20 years.
@@ -227,10 +271,10 @@ Also added in 3.14: :ref:`concurrent.futures.InterpreterPoolExecutor
    :pep:`734`.
 
 
-.. _whatsnew314-pep750:
+.. _whatsnew314-template-string-literals:
 
-PEP 750: Template strings
--------------------------
+Template string literals
+------------------------
 
 Template string literals (t-strings) are a generalization of f-strings,
 using a ``t`` in place of the ``f`` prefix. Instead of evaluating
@@ -296,13 +340,14 @@ Lysandros Nikolaou, Dave Peck, Adam Turner, Jelle Zijlstra, Bénédikt Tran,
 and Pablo Galindo Salgado in :gh:`132661`.)
 
 .. seealso::
+
    :pep:`750`.
 
 
-.. _whatsnew314-pep768:
+.. _whatsnew314-remote-debugging:
 
-PEP 768: Safe external debugger interface for CPython
------------------------------------------------------
+Safe external debugger interface
+--------------------------------
 
 :pep:`768` introduces a zero-overhead debugging interface that allows debuggers and profilers
 to safely attach to running Python processes. This is a significant enhancement to Python's
@@ -313,7 +358,7 @@ implement the new :mod:`pdb` module's remote attaching capabilities.
 The new interface provides safe execution points for attaching debugger code without modifying
 the interpreter's normal execution path or adding runtime overhead. This enables tools to
 inspect and interact with Python applications in real-time without stopping or restarting
-them — a crucial capability for high-availability systems and production environments.
+them -- a crucial capability for high-availability systems and production environments.
 
 For convenience, CPython implements this interface through the :mod:`sys` module with a
 :func:`sys.remote_exec` function::
@@ -357,13 +402,14 @@ for external processes to coordinate debugging operations.
 (Contributed by Pablo Galindo Salgado, Matt Wozniski, and Ivona Stojanovic in :gh:`131591`.)
 
 .. seealso::
+
    :pep:`768`.
 
 
-.. _whatsnew314-pep784:
+.. _whatsnew314-zstandard:
 
-PEP 784: Adding Zstandard to the standard library
--------------------------------------------------
+Adding Zstandard to the standard library
+----------------------------------------
 
 The new ``compression`` package contains modules :mod:`!compression.lzma`,
 :mod:`!compression.bz2`, :mod:`!compression.gzip` and :mod:`!compression.zlib`
@@ -434,13 +480,13 @@ to attach to the remote process and send the PDB commands to it.
    :pep:`768`.
 
 
-.. _whatsnew314-pep758:
+.. _whatsnew314-bracketless-except:
 
-PEP 758 – Allow except and except* expressions without parentheses
-------------------------------------------------------------------
+Allow except and except* expressions without brackets
+-----------------------------------------------------
 
 The :keyword:`except` and :keyword:`except* <except_star>` expressions now allow
-parentheses to be omitted when there are multiple exception types and the ``as`` clause is not used.
+brackets to be omitted when there are multiple exception types and the ``as`` clause is not used.
 For example the following expressions are now valid:
 
 .. code-block:: python
@@ -465,10 +511,10 @@ Check :pep:`758` for more details.
    :pep:`758`.
 
 
-.. _whatsnew314-pep649:
+.. _whatsnew314-deferred-annotations:
 
-PEP 649 and 749: deferred evaluation of annotations
----------------------------------------------------
+Deferred evaluation of annotations
+----------------------------------
 
 The :term:`annotations <annotation>` on functions, classes, and modules are no
 longer evaluated eagerly. Instead, annotations are stored in special-purpose
@@ -504,6 +550,15 @@ This example shows how these formats behave:
    {'arg': ForwardRef('Undefined', owner=<function func at 0x...>)}
    >>> get_annotations(func, format=Format.STRING)
    {'arg': 'Undefined'}
+
+(Contributed by Jelle Zijlstra in :gh:`119180`; :pep:`649` was written by Larry Hastings.)
+
+.. seealso::
+
+   :pep:`649`
+      Deferred Evaluation Of Annotations Using Descriptors
+   :pep:`749`
+      Implementing PEP 649
 
 Implications for annotated code
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -564,11 +619,8 @@ Python without deferred evaluation of annotations, reaches its end of life in 20
 In Python 3.14, the behavior of code using ``from __future__ import annotations``
 is unchanged.
 
-(Contributed by Jelle Zijlstra in :gh:`119180`; :pep:`649` was written by Larry Hastings.)
 
-.. seealso::
-   :pep:`649` and :pep:`749`.
-
+.. _whatsnew314-improved-error-messages:
 
 Improved error messages
 -----------------------
@@ -739,10 +791,10 @@ Improved error messages
   (Contributed by Bénédikt Tran in :gh:`128398`.)
 
 
-.. _whatsnew314-pep741:
+.. _whatsnew314-capi-config:
 
-PEP 741: Python configuration C API
------------------------------------
+Python configuration C API
+--------------------------
 
 Add a :ref:`PyInitConfig C API <pyinitconfig_api>` to configure the Python
 initialization without relying on C structures and the ability to make
@@ -750,27 +802,31 @@ ABI-compatible changes in the future.
 
 Complete the :pep:`587` :ref:`PyConfig C API <pyconfig_api>` by adding
 :c:func:`PyInitConfig_AddModule` which can be used to add a built-in extension
-module; a feature previously referred to as the “inittab”.
+module; a feature previously referred to as the "inittab".
 
 Add :c:func:`PyConfig_Get` and :c:func:`PyConfig_Set` functions to get and set
 the current runtime configuration.
 
-PEP 587 “Python Initialization Configuration” unified all the ways to configure
+:pep:`587` "Python Initialization Configuration" unified all the ways to configure
 the Python initialization. This PEP unifies also the configuration of the
 Python preinitialization and the Python initialization in a single API.
 Moreover, this PEP only provides a single choice to embed Python, instead of
-having two “Python” and “Isolated” choices (PEP 587), to simplify the API
+having two "Python" and "Isolated" choices (PEP 587), to simplify the API
 further.
 
 The lower level PEP 587 PyConfig API remains available for use cases with an
 intentionally higher level of coupling to CPython implementation details (such
-as emulating the full functionality of CPython’s CLI, including its
+as emulating the full functionality of CPython's CLI, including its
 configuration mechanisms).
 
 (Contributed by Victor Stinner in :gh:`107954`.)
 
 .. seealso::
-   :pep:`741`.
+
+   :pep:`741`
+
+   :pep:`587`
+
 
 .. _whatsnew314-asyncio-introspection:
 
@@ -886,6 +942,7 @@ prevent tree construction:
 (Contributed by Pablo Galindo, Łukasz Langa, Yury Selivanov, and Marta
 Gomez Macias in :gh:`91048`.)
 
+
 .. _whatsnew314-tail-call:
 
 A new type of interpreter
@@ -896,8 +953,7 @@ It uses tail calls between small C functions that implement individual
 Python opcodes, rather than one large C case statement.
 For certain newer compilers, this interpreter provides
 significantly better performance. Preliminary numbers on our machines suggest
-anywhere up to 30% faster Python code, and a geometric mean of 3-5%
-faster on ``pyperformance`` depending on platform and architecture. The
+and a geometric mean of 3-5% faster on ``pyperformance`` depending on platform and architecture. The
 baseline is Python 3.14 built with Clang 19 without this new interpreter.
 
 This interpreter currently only works with Clang 19 and newer
@@ -921,22 +977,9 @@ For further information on how to build Python, see
 
    __ https://en.wikipedia.org/wiki/Tail_call
 
-.. attention::
-
-    This section previously reported a 9-15% geometric mean speedup. This number has since been
-    cautiously revised down to 3-5%. While we expect performance results to be better
-    than what we report, our estimates are more conservative due to a
-    `compiler bug <https://github.com/llvm/llvm-project/issues/106846>`_ found in
-    Clang/LLVM 19, which causes the normal interpreter to be slower. We were unaware of this bug,
-    resulting in inaccurate results. We sincerely apologize for
-    communicating results that were only accurate for LLVM v19.1.x and v20.1.0. In the meantime,
-    the bug has been fixed in LLVM v20.1.1 and for the upcoming v21.1, but it will remain
-    unfixed for LLVM v19.1.x and v20.1.0. Thus
-    any benchmarks with those versions of LLVM may produce inaccurate numbers.
-    (Thanks to Nelson Elhage for bringing this to light.)
-
 (Contributed by Ken Jin in :gh:`128563`, with ideas on how to implement this
 in CPython by Mark Shannon, Garrett Gu, Haoran Xu, and Josh Haberman.)
+
 
 .. _whatsnew314-free-threaded-cpython:
 
@@ -950,14 +993,6 @@ The specializing adaptive interpreter (:pep:`659`) is now enabled in free-thread
 which along with many other optimizations greatly improves its performance.
 The performance penalty on single-threaded code in free-threaded mode is now roughly 5-10%,
 depending on platform and C compiler used.
-
-This work was done by many contributors: Sam Gross, Matt Page, Neil Schemenauer,
-Thomas Wouters, Donghee Na, Kirill Podoprigora, Ken Jin, Itamar Oren,
-Brett Simmers, Dino Viehland, Nathan Goldbaum, Ralf Gommers, Lysandros Nikolaou,
-Kumar Aditya, Edgar Margffoy, and many others.
-
-Some of these contributors are employed by Meta, which has continued to provide
-significant engineering resources to support this project.
 
 From 3.14, when compiling extension modules for the free-threaded build of
 CPython on Windows, the preprocessor variable ``Py_GIL_DISABLED`` now needs to
@@ -981,6 +1016,14 @@ filtering context established by :class:`~warnings.catch_warnings` be
 "inherited" by threads (or asyncio tasks) started within that context.  It also
 affects other modules that use context variables, such as the :mod:`decimal`
 context manager.
+
+This work was done by many contributors: Sam Gross, Matt Page, Neil Schemenauer,
+Thomas Wouters, Donghee Na, Kirill Podoprigora, Ken Jin, Itamar Oren,
+Brett Simmers, Dino Viehland, Nathan Goldbaum, Ralf Gommers, Lysandros Nikolaou,
+Kumar Aditya, Edgar Margffoy, and many others.
+
+Some of these contributors are employed by Meta, which has continued to provide
+significant engineering resources to support this project.
 
 
 .. _whatsnew314-jit-compiler:
@@ -1012,6 +1055,9 @@ Please report any bugs or major performance regressions that you encounter!
 
 .. seealso:: :pep:`744`
 
+
+.. _whatsnew314-concurrent-warnings-control:
+
 Concurrent safe warnings control
 --------------------------------
 
@@ -1026,7 +1072,8 @@ free-threaded build and false for the GIL-enabled build.
 (Contributed by Neil Schemenauer and Kumar Aditya in :gh:`130010`.)
 
 
-Platform support
+
+Platform Support
 ================
 
 * :pep:`776`: Emscripten is now an officially supported platform at
@@ -1050,7 +1097,7 @@ Platform support
   (Contributed by Russell Keith-Magee in :gh:`127592`.)
 
 
-Other language changes
+Other Language Changes
 ======================
 
 * All Windows code pages are now supported as 'cpXXX' codecs on Windows.
@@ -1146,8 +1193,8 @@ Command line and environment
 
 .. _whatsnew314-finally-syntaxwarning:
 
-PEP 765: Control flow in :keyword:`finally` blocks
---------------------------------------------------
+Control flow in :keyword:`finally` blocks
+-----------------------------------------
 
 The compiler now emits a :exc:`SyntaxWarning` when a :keyword:`return`,
 :keyword:`break`, or :keyword:`continue` statement have the effect of
@@ -1209,16 +1256,21 @@ Default interactive shell
   (Contributed by Tomas Roun in :gh:`69605`.)
 
 
-New modules
+New Modules
 ===========
 
 * :mod:`annotationlib`: For introspecting :term:`annotations <annotation>`.
   See :pep:`749` for more details.
   (Contributed by Jelle Zijlstra in :gh:`119180`.)
+* :mod:`!compression.*`
+* :mod:`compression.zstd`
+* :mod:`concurrent.interpreters`
+* :mod:`string.templatelib`
 
 
-Improved modules
+Improved Modules
 ================
+
 
 argparse
 --------
@@ -1233,7 +1285,7 @@ argparse
   and subparser names if mistyped by the user.
   (Contributed by Savannah Ostrowski in :gh:`124456`.)
 
-  .. _whatsnew314-color-argparse:
+.. _whatsnew314-color-argparse:
 
 * Enable color for help text, which can be disabled with the optional *color*
   parameter to :class:`argparse.ArgumentParser`.
@@ -1254,7 +1306,7 @@ ast
 * Docstrings are now removed from an optimized AST in optimization level 2.
   (Contributed by Irit Katriel in :gh:`123958`.)
 
-* The ``repr()`` output for AST nodes now includes more information.
+* The :func:`repr` output for AST nodes now includes more information.
   (Contributed by Tomas Roun in :gh:`116022`.)
 
 * :func:`ast.parse`, when called with an AST as input, now always verifies
@@ -1295,6 +1347,8 @@ asyncio
 calendar
 --------
 
+.. _whatsnew314-color-calendar:
+
 * By default, today's date is highlighted in color in :mod:`calendar`'s
   :ref:`command-line <calendar-cli>` text output.
   This can be controlled by :ref:`environment variables
@@ -1309,8 +1363,9 @@ concurrent.futures
 
 * Add :class:`~concurrent.futures.InterpreterPoolExecutor`,
   which exposes "subinterpreters" (multiple Python interpreters in the
-  same process) to Python code.  This is separate from the proposed API
-  in :pep:`734`.
+  same process) to Python code.
+  This is separate from the new :mod:`~concurrent.interpreters` module
+  introduced by :ref:`PEP 734 <whatsnew314-multiple-interpreters>`.
   (Contributed by Eric Snow in :gh:`124548`.)
 
 .. _whatsnew314-concurrent-futures-start-method:
@@ -1346,19 +1401,22 @@ concurrent.futures
   buffer.
   (Contributed by Enzo Bonnal and Josh Rosenberg in :gh:`74028`.)
 
+
 configparser
 ------------
 
-* Security fix: will no longer write config files it cannot read. Attempting
-  to :meth:`configparser.ConfigParser.write` keys containing delimiters or
+* :mod:`configparser` will no longer write config files it cannot read,
+  to improve security.
+  Attempting to :meth:`configparser.ConfigParser.write` keys containing delimiters or
   beginning with the section header pattern will raise a
   :class:`configparser.InvalidWriteError`.
   (Contributed by Jacob Lincoln in :gh:`129270`.)
 
+
 contextvars
 -----------
 
-* Support context manager protocol by :class:`contextvars.Token`.
+* Support context manager protocol in :class:`contextvars.Token`.
   (Contributed by Andrew Svetlov in :gh:`129889`.)
 
 
@@ -1416,6 +1474,7 @@ ctypes
 * :mod:`ctypes` now supports :term:`free-threading builds <free threading>`.
   (Contributed by Kumar Aditya and Peter Bierma in :gh:`127945`.)
 
+
 curses
 ------
 
@@ -1424,22 +1483,25 @@ curses
   allows to change the color pair ``0``.
   (Contributed by Serhiy Storchaka in :gh:`133139`.)
 
+
 datetime
 --------
 
 * Add :meth:`datetime.time.strptime` and :meth:`datetime.date.strptime`.
   (Contributed by Wannes Boeykens in :gh:`41431`.)
 
+
 decimal
 -------
 
 * Add alternative :class:`~decimal.Decimal` constructor
-  :meth:`Decimal.from_number() <decimal.Decimal.from_number>`.
+  :meth:`.Decimal.from_number`.
   (Contributed by Serhiy Storchaka in :gh:`121798`.)
 
 * Expose :func:`decimal.IEEEContext` to support creation of contexts
   corresponding to the IEEE 754 (2008) decimal interchange formats.
   (Contributed by Sergey B Kirpichev in :gh:`53032`.)
+
 
 difflib
 -------
@@ -1447,6 +1509,7 @@ difflib
 * Comparison pages with highlighted changes generated by the
   :class:`difflib.HtmlDiff` class now support dark mode.
   (Contributed by Jiahao Li in :gh:`129939`.)
+
 
 dis
 ---
@@ -1500,7 +1563,7 @@ fractions
   (Contributed by Serhiy Storchaka in :gh:`82017`.)
 
 * Add alternative :class:`~fractions.Fraction` constructor
-  :meth:`Fraction.from_number() <fractions.Fraction.from_number>`.
+  :meth:`.Fraction.from_number`.
   (Contributed by Serhiy Storchaka in :gh:`121797`.)
 
 
@@ -1588,7 +1651,7 @@ http
 imaplib
 -------
 
-* Add :meth:`IMAP4.idle() <imaplib.IMAP4.idle>`, implementing the IMAP4
+* Add :meth:`.IMAP4.idle`, implementing the IMAP4
   ``IDLE`` command as defined in :rfc:`2177`.
   (Contributed by Forest in :gh:`55454`.)
 
@@ -1634,13 +1697,14 @@ json
   See the :ref:`JSON command-line interface <json-commandline>` documentation.
   (Contributed by Trey Hunner in :gh:`122873`.)
 
-  .. _whatsnew314-color-json:
+.. _whatsnew314-color-json:
 
 * By default, the output of the :ref:`JSON command-line interface
   <json-commandline>` is highlighted in color.
   This can be controlled by :ref:`environment variables
   <using-on-controlling-color>`.
   (Contributed by Tomas Roun in :gh:`131952`.)
+
 
 linecache
 ---------
@@ -1792,6 +1856,7 @@ multiprocessing
   process by sending :py:const:`~signal.SIGINT`. This enables
   :keyword:`finally` clauses to print a stack trace for the terminated
   process. (Contributed by Artem Pulkin in :gh:`131913`.)
+
 
 operator
 --------
@@ -1965,6 +2030,7 @@ socket
   * Add many new constants.
     (Contributed by Serhiy Storchaka in :gh:`132734`.)
 
+
 ssl
 ---
 
@@ -2066,6 +2132,7 @@ tkinter
   :class:`!tkinter.ttk.OptionMenu`.
   (Contributed by Zhikang Yan in :gh:`130482`.)
 
+
 turtle
 ------
 
@@ -2094,7 +2161,7 @@ typing
   may affect users who introspect types at runtime:
 
   - Both syntaxes for creating a union now produce the same string representation in
-    ``repr()``. For example, ``repr(Union[int, str])``
+    :func:`repr`. For example, ``repr(Union[int, str])``
     is now ``"int | str"`` instead of ``"typing.Union[int, str]"``.
   - Unions created using the old syntax are no longer cached. Previously, running
     ``Union[int, str]`` multiple times would return the same object
@@ -2133,10 +2200,10 @@ unicodedata
 * The Unicode database has been updated to Unicode 16.0.0.
 
 
-.. _whatsnew314-color-unittest:
-
 unittest
 --------
+
+.. _whatsnew314-color-unittest:
 
 * :mod:`unittest` output is now colored by default.
   This can be controlled by :ref:`environment variables
@@ -2568,6 +2635,7 @@ asyncio
          blocking_code()
          runner.run(operation_two())
 
+
 email
 -----
 
@@ -2668,7 +2736,7 @@ urllib
 Deprecated
 ==========
 
-New deprecations
+New Deprecations
 ----------------
 
 * Passing a complex number as the *real* or *imag* argument in the
@@ -2819,7 +2887,7 @@ New deprecations
 .. include:: ../deprecations/pending-removal-in-future.rst
 
 
-CPython bytecode changes
+CPython Bytecode Changes
 ========================
 
 * Replaced the opcode :opcode:`!BINARY_SUBSCR` by the :opcode:`BINARY_OP`
@@ -2896,7 +2964,7 @@ Pseudo-instructions
   (Contributed by Mark Shannon in :gh:`122548`.)
 
 
-C API changes
+C API Changes
 =============
 
 New features in the C API
@@ -3263,7 +3331,7 @@ Changes in the Python API
   (Contributed by Jelle Zijlstra in :gh:`105499`.)
 
 * The runtime behavior of annotations has changed in various ways; see
-  :ref:`above <whatsnew314-pep649>` for details. While most code that interacts
+  :ref:`above <whatsnew314-deferred-annotations>` for details. While most code that interacts
   with annotations should continue to work, some undocumented details may behave
   differently.
 

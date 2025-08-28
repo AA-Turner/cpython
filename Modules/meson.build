@@ -49,7 +49,7 @@ stdlib_modules = [
   { 'name': 'array', 'sources': files([ 'arraymodule.c' ]) },
   { 'name': '_asyncio', 'sources': files([ '_asynciomodule.c' ]) },
   { 'name': '_bisect', 'sources': files([ '_bisectmodule.c' ]) },
-  { 'name': '_contextvars', 'sources': files([ '_contextvarsmodule.c' ]) },
+#  { 'name': '_contextvars', 'sources': files([ '_contextvarsmodule.c' ]) },
   { 'name': '_csv', 'sources': files([ '_csv.c' ]) },
   { 'name': '_heapq', 'sources': files([ '_heapqmodule.c' ]) },
   { 'name': '_json', 'sources': files([ '_json.c' ]) },

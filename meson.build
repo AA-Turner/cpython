@@ -1,4 +1,4 @@
-project('cpython', 'c',
+project('python', 'c',
   version: '3.15.0',
   default_options: ['warning_level=1', 'c_std=c11'],
   meson_version: '>= 1.9.0'
@@ -18,7 +18,7 @@ librt_dep = cc.find_library('rt', required: false)
 
 libmpdec_dep = cc.find_library('mpdec', required: get_option('system-libmpdec'))
 
-bzip_dep = dependency('bzip2')
+#bzip_dep = dependency('bz2')
 lzma_dep = dependency('liblzma')
 zlib_dep = dependency('zlib')
 
@@ -868,7 +868,7 @@ cfg.set('HAVE_ZLIB_H', zlib_dep.found())
 if zlib_dep.found()
   cfg.set('HAVE_ZLIB_COPY', cc.has_function('inflateCopy', prefix: '#include <zlib.h>', dependencies: zlib_dep))
 endif
-cfg.set('HAVE_BZLIB_H', bzip_dep.found())
+#cfg.set('HAVE_BZLIB_H', bzip_dep.found())
 cfg.set('HAVE_LZMA_H', lzma_dep.found())
 
 cfg.set('HAVE_HSTRERROR', cc.has_function('hstrerror', prefix: '#include <netdb.h>', args: feature_flags))

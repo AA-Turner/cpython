@@ -5,7 +5,7 @@ python_src = [
   'asdl.c',
   'assemble.c',
   'ast.c',
-  'ast_opt.c',
+  'ast_preprocess.c',
   'ast_unparse.c',
   'bltinmodule.c',
   'bootstrap_hash.c',

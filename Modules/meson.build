@@ -82,7 +82,7 @@ stdlib_modules = [
   # compression libs and binascii (optional CRC32 from zlib)
   # bindings need -lbz2, -lz, or -llzma, respectively
   { 'name': 'binascii', 'sources': files([ 'binascii.c' ]) },
-  { 'name': '_bz2', 'sources': files([ '_bz2module.c' ]), 'deps': [ bzip_dep ] },
+#  { 'name': '_bz2', 'sources': files([ '_bz2module.c' ]), 'deps': [ bzip_dep ] },
   { 'name': '_lzma', 'sources': files([ '_lzmamodule.c' ]), 'deps': [ lzma_dep ] },
   { 'name': 'zlib', 'sources': files([ 'zlibmodule.c' ]), 'deps': [ zlib_dep ] },
 
@@ -138,10 +138,10 @@ stdlib_modules = [
 ]
 
 # dbm/gdbm
-if libdbm_dep.found()
-  # dbm needs either libndbm, libgdbm_compat, or libdb 5.x
-  stdlib_modules += { 'name': '_dbm', 'sources': files([ '_dbmmodule.c' ]), 'deps': [ libdbm_dep ] }
-endif
+#if libdbm_dep.found()
+#  # dbm needs either libndbm, libgdbm_compat, or libdb 5.x
+#  stdlib_modules += { 'name': '_dbm', 'sources': files([ '_dbmmodule.c' ]), 'deps': [ libdbm_dep ] }
+#endif
 if libgdbm_dep.found()
   # gdbm module needs -lgdbm
   stdlib_modules += { 'name': '_gdbm', 'sources': files([ '_gdbmmodule.c' ]), 'deps': [ libgdbm_dep ] }

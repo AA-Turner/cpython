@@ -1,7 +1,7 @@
 project('cpython', 'c',
-	version: '3.14.0',
-	default_options: ['warning_level=1', 'c_std=c11'],
-	meson_version: '>= 1.3.0'
+  version: '3.14.0',
+  default_options: ['warning_level=1', 'c_std=c11'],
+  meson_version: '>= 1.3.0'
 )
 
 version_components = meson.project_version().split('.')
@@ -24,26 +24,26 @@ zlib_dep = dependency('zlib')
 
 libdbm_dep = dependency('', required: false)
 dbm_libs = {
-	'ndbm': { 'lib': 'ndbm', 'cflags': '-DUSE_NDBM', 'headers': [ 'ndbm.h' ] },
-	'gdbm': { 'lib': 'gdbm_compat', 'cflags': '-DUSE_GDBM_COMPAT', 'headers': [ 'gdbm/ndbm.h', 'gdbm-ndbm.h' ] },
-	'bdb': { 'lib': 'db', 'cflags': '-DUSE_BERKDB', 'headers': [ 'db.h' ] }
+  'ndbm': { 'lib': 'ndbm', 'cflags': '-DUSE_NDBM', 'headers': [ 'ndbm.h' ] },
+  'gdbm': { 'lib': 'gdbm_compat', 'cflags': '-DUSE_GDBM_COMPAT', 'headers': [ 'gdbm/ndbm.h', 'gdbm-ndbm.h' ] },
+  'bdb': { 'lib': 'db', 'cflags': '-DUSE_BERKDB', 'headers': [ 'db.h' ] }
 }
 foreach dbm_lib : get_option('dbm-lib-order')
-	dep = cc.find_library(dbm_libs[dbm_lib]['lib'], required: false)
-	has_header = false
-	foreach header : dbm_libs[dbm_lib]['headers']
-		if cc.has_header(header, dependencies: dep)
-			has_header = true
-			break
-		endif
-	endforeach
-	if dep.found() and has_header
-		libdbm_dep = declare_dependency(
-			compile_args: dbm_libs[dbm_lib]['cflags'],
-			dependencies: dep
-		)
-		break
-	endif
+  dep = cc.find_library(dbm_libs[dbm_lib]['lib'], required: false)
+  has_header = false
+  foreach header : dbm_libs[dbm_lib]['headers']
+    if cc.has_header(header, dependencies: dep)
+      has_header = true
+      break
+    endif
+  endforeach
+  if dep.found() and has_header
+    libdbm_dep = declare_dependency(
+      compile_args: dbm_libs[dbm_lib]['cflags'],
+      dependencies: dep
+    )
+    break
+  endif
 endforeach
 libgdbm_dep = cc.find_library('gdbm', required: false)
 
@@ -57,10 +57,10 @@ panel_dep = dependency('panelw', required: false)
 have_ncursesw = ncurses_dep.found()
 have_panelw = panel_dep.found()
 if not ncurses_dep.found()
-	ncurses_dep = dependency('ncurses', required: false)
+  ncurses_dep = dependency('ncurses', required: false)
 endif
 if not panel_dep.found()
-	panel_dep = dependency('panel', required: false)
+  panel_dep = dependency('panel', required: false)
 endif
 
 sqlite3_dep = dependency('sqlite3', version: '>= 3.15.2', required: false)
@@ -71,19 +71,19 @@ tcl_dep = dependency('tcl', version: '>= 8.5.12', required: false)
 tk_dep = dependency('tk', version: '>= 8.5.12', required: false)
 
 feature_flags = [
-	'-D_NETBSD_SOURCE',
-	'-D__BSD_VISIBLE',
-	'-D_DARWIN_C_SOURCE',
-	'-D_XOPEN_SOURCE=700',
-	'-D_XOPEN_SOURCE_EXTENDED',
-	'-D_POSIX_C_SOURCE=200809L',
-	'-D_ALL_SOURCE',
-	'-D_DARWIN_C_SOURCE',
-	'-D_GNU_SOURCE',
-	'-D_HPUX_ALT_XOPEN_SOCKET_API',
-	'-D_NETBSD_SOURCE',
-	'-D_OPENBSD_SOURCE',
-	'-D_POSIX_PTHREAD_SEMANTICS',
+  '-D_NETBSD_SOURCE',
+  '-D__BSD_VISIBLE',
+  '-D_DARWIN_C_SOURCE',
+  '-D_XOPEN_SOURCE=700',
+  '-D_XOPEN_SOURCE_EXTENDED',
+  '-D_POSIX_C_SOURCE=200809L',
+  '-D_ALL_SOURCE',
+  '-D_DARWIN_C_SOURCE',
+  '-D_GNU_SOURCE',
+  '-D_HPUX_ALT_XOPEN_SOCKET_API',
+  '-D_NETBSD_SOURCE',
+  '-D_OPENBSD_SOURCE',
+  '-D_POSIX_PTHREAD_SEMANTICS',
 ]
 
 # these sadly don't count for the compiler check methods
@@ -113,7 +113,7 @@ abi = '@0@-@1@'.format(host_machine.cpu_family(), host_machine.system())
 soabi = '@0@-@1@@2@-@3@'.format(meson.project_name(), py_release.replace('.', ''), abiflags, abi)
 cfg.set_quoted('SOABI', soabi)
 if with_pydebug
-	cfg.set_quoted('ALT_SOABI', '@0@-@1@@2@-@3@'.format(meson.project_name(), py_release.replace('.', ''), abiflags.replace('d', ''), abi))
+  cfg.set_quoted('ALT_SOABI', '@0@-@1@@2@-@3@'.format(meson.project_name(), py_release.replace('.', ''), abiflags.replace('d', ''), abi))
 endif
 
 cfg.set_quoted('_PYTHONFRAMEWORK', '')
@@ -125,8 +125,8 @@ cfg.set_quoted('PLATLIBDIR', get_option('prefix') / get_option('libdir'))
 
 liblog_dep = declare_dependency()
 if host_machine.system() == 'android'
-	cfg.set('ANDROID_API_LEVEL', cc.get_define('__ANDROID_API__'))
-	liblog_dep = cc.find_library('log')
+  cfg.set('ANDROID_API_LEVEL', cc.get_define('__ANDROID_API__'))
+  liblog_dep = cc.find_library('log')
 endif
 
 cfg.set('HAVE_ALLOCA_H', cc.has_header('alloca.h'))
@@ -223,15 +223,15 @@ cfg.set('HAVE_UTIME_H', cc.has_header('utime.h'))
 cfg.set('HAVE_UTMP_H', cc.has_header('utmp.h'))
 
 foreach header : [
-	{ 'def': 'HAVE_DIRENT_H', 'header': 'dirent.h' },
-	{ 'def': 'HAVE_SYS_NDIR_H', 'header': 'sys/ndir.h' },
-	{ 'def': 'HAVE_SYS_DIR_H', 'header': 'sys/dir.h' },
-	{ 'def': 'HAVE_NDIR_H', 'header': 'ndir.h' }
+  { 'def': 'HAVE_DIRENT_H', 'header': 'dirent.h' },
+  { 'def': 'HAVE_SYS_NDIR_H', 'header': 'sys/ndir.h' },
+  { 'def': 'HAVE_SYS_DIR_H', 'header': 'sys/dir.h' },
+  { 'def': 'HAVE_NDIR_H', 'header': 'ndir.h' }
 ]
-	if cc.has_type('DIR*', prefix: '#include <@0@>'.format(header['header']))
-		cfg.set(header['def'], true)
-		break
-	endif
+  if cc.has_type('DIR*', prefix: '#include <@0@>'.format(header['header']))
+    cfg.set(header['def'], true)
+    break
+  endif
 endforeach
 
 major_in_mkdev = cc.has_header('sys/mkdev.h')
@@ -259,9 +259,9 @@ cfg.set('HAVE_LINUX_CAN_RAW_H', cc.has_header('linux/can/raw.h'))
 cfg.set('HAVE_NETCAN_CAN_H', cc.has_header('netcan/can.h'))
 
 if cc.has_type('clock_t', prefix: '#include <time.h>')
-	cfg.set('HAVE_CLOCK_T', true)
+  cfg.set('HAVE_CLOCK_T', true)
 else
-	cfg.set('clock_t', 'long')
+  cfg.set('clock_t', 'long')
 endif
 
 cfg.set('HAVE_MAKEDEV', cc.compiles('''
@@ -274,8 +274,8 @@ cfg.set('HAVE_MAKEDEV', cc.compiles('''
 #endif
 
 int main(void) {
-	makedev(0, 0);
-	return 0;
+  makedev(0, 0);
+  return 0;
 }'''.format(major_in_mkdev ? '1' : '0', major_in_sysmacros ? '1' : '0')))
 
 cfg.set('HAVE_DEVICE_MACROS', cc.compiles('''
@@ -288,8 +288,8 @@ cfg.set('HAVE_DEVICE_MACROS', cc.compiles('''
 #endif
 
 int main(void) {
-	makedev(major(0), minor(0));
-	return 0;
+  makedev(major(0), minor(0));
+  return 0;
 }'''.format(major_in_mkdev ? '1' : '0', major_in_sysmacros ? '1' : '0')))
 
 cfg.set('SYS_SELECT_WITH_SYS_TIME', true)
@@ -302,57 +302,57 @@ cfg.set('HAVE_HTOLE64', cc.compiles('''
 #endif
 
 int main(void) {
-	return le64toh(1);
+  return le64toh(1);
 }
 '''.format(have_endian_h ? 1 : 0, have_sys_endian_h ? 1 : 0), args: feature_flags))
 
 use_lfs = true
 # Don't use largefile support for GNU/Hurd
 if host_machine.system() == 'gnu'
-	use_lfs = false
+  use_lfs = false
 endif
 if use_lfs
-	# TODO: AIX do #define _LARGE_FILES 1
-	cfg.set('_LARGEFILE_SOURCE', 1)
-	cfg.set('_FILE_OFFSET_BITS', 64)
+  # TODO: AIX do #define _LARGE_FILES 1
+  cfg.set('_LARGEFILE_SOURCE', 1)
+  cfg.set('_FILE_OFFSET_BITS', 64)
 endif
 
 if not cc.has_type('mode_t', prefix: '#include <sys/types.h>')
-	cfg.set('mode_t', 'int')
+  cfg.set('mode_t', 'int')
 endif
 
 if not cc.has_type('off_t', prefix: '#include <sys/types.h>')
-	cfg.set('off_t', 'long int')
+  cfg.set('off_t', 'long int')
 endif
 
 if not cc.has_type('pid_t', prefix: '#include <sys/types.h>')
-	if cc.compiles('''
+  if cc.compiles('''
 #if defined _WIN64 && !defined __CYGWIN__
 LLP64
 #endif
 
 int main(void) {
-	return 0;
+  return 0;
 }
-	''')
-		cfg.set('pid_t', 'int')
-	else
-		cfg.set('pid_t', '__int64')
-	endif
+  ''')
+    cfg.set('pid_t', 'int')
+  else
+    cfg.set('pid_t', '__int64')
+  endif
 endif
 
 cfg.set('RETSIGTYPE', 'void')
 
 if not cc.has_type('size_t', prefix: '#include <stddef.h>')
-	cfg.set('size_t', '(unsigned int)')
+  cfg.set('size_t', '(unsigned int)')
 endif
 
 if not cc.has_type('uid_t', prefix: '#include <sys/types.h>')
-	cfg.set('uid_t', 'int')
+  cfg.set('uid_t', 'int')
 endif
 
 if not cc.has_type('gid_t', prefix: '#include <sys/types.h>')
-	cfg.set('gid_t', 'int')
+  cfg.set('gid_t', 'int')
 endif
 
 cfg.set('HAVE_SSIZE_T', cc.has_type('ssize_t', prefix: '#include <sys/types.h>') ? 1 : 0)
@@ -378,8 +378,8 @@ cfg.set('SIZEOF_PID_T', cc.sizeof('pid_t', prefix: '#include <sys/types.h>'))
 cfg.set('SIZEOF_UINTPTR_T', cc.sizeof('uintptr_t', prefix: '#include <stdint.h>'))
 cfg.set('ALIGNOF_MAX_ALIGN_T', cc.alignment('max_align_t'))
 if cc.has_type('long double')
-	cfg.set('HAVE_LONG_DOUBLE', true)
-	cfg.set('SIZEOF_LONG_DOUBLE', cc.sizeof('long double'))
+  cfg.set('HAVE_LONG_DOUBLE', true)
+  cfg.set('SIZEOF_LONG_DOUBLE', cc.sizeof('long double'))
 endif
 cfg.set('SIZEOF__BOOL', cc.sizeof('_Bool'))
 size_off_t = cc.sizeof('off_t', prefix: '#include <sys/types.h>')
@@ -389,64 +389,64 @@ cfg.set('HAVE_LARGEFILE_SUPPORT', size_off_t > size_long and size_long_long >= s
 
 cfg.set('SIZEOF_TIME_T', cc.sizeof('time_t', prefix: '#include <time.h>'))
 if cc.has_type('pthread_t', prefix: '#include <pthread.h>')
-	cfg.set('SIZEOF_PTHREAD_T', cc.sizeof('pthread_t', prefix: '#include <pthread.h>'))
-	cfg.set('SIZEOF_PTHREAD_KEY_T', cc.sizeof('pthread_key_t', prefix: '#include <pthread.h>'))
+  cfg.set('SIZEOF_PTHREAD_T', cc.sizeof('pthread_t', prefix: '#include <pthread.h>'))
+  cfg.set('SIZEOF_PTHREAD_KEY_T', cc.sizeof('pthread_key_t', prefix: '#include <pthread.h>'))
 
-	# Issue #25658: POSIX hasn't defined that pthread_key_t is compatible with int.
-	# This checking will be unnecessary after removing deprecated TLS API.
-	# The cast to long int works around a bug in the HP C Compiler
-	# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
-	# declarations like 'int a3[[(sizeof (unsigned char)) >= 0]];'.
-	# This bug is HP SR number 8606223364.
-	cfg.set('PTHREAD_KEY_T_IS_COMPATIBLE_WITH_INT', cc.compiles('''
+  # Issue #25658: POSIX hasn't defined that pthread_key_t is compatible with int.
+  # This checking will be unnecessary after removing deprecated TLS API.
+  # The cast to long int works around a bug in the HP C Compiler
+  # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+  # declarations like 'int a3[[(sizeof (unsigned char)) >= 0]];'.
+  # This bug is HP SR number 8606223364.
+  cfg.set('PTHREAD_KEY_T_IS_COMPATIBLE_WITH_INT', cc.compiles('''
 #include <pthread.h>
 
 int main(void) {
-	pthread_key_t k; k * 1;
-	return 0;
+  pthread_key_t k; k * 1;
+  return 0;
 }
 '''))
 endif
 
 cfg.set('PY_HAVE_PERF_TRAMPOLINE',
-	host_machine.system() == 'linux' and ['x86_64', 'aarch64'].contains(host_machine.cpu_family())
+  host_machine.system() == 'linux' and ['x86_64', 'aarch64'].contains(host_machine.cpu_family())
 )
 
 sendfile_lib = cc.find_library('sendfile', required: false)
 if sendfile_lib.found()
-	cfg.set('HAVE_LIBSENDFILE', cc.links('''
+  cfg.set('HAVE_LIBSENDFILE', cc.links('''
 #ifdef __cplusplus
 extern "C"
 #endif
 char sendfile(void);
 int main(void) {
-	return sendfile();
+  return sendfile();
 }
 '''))
 endif
 
 dl_lib = cc.find_library('dl', required: false)
 if dl_lib.found()
-	cfg.set('HAVE_LIBDL', cc.links('''
+  cfg.set('HAVE_LIBDL', cc.links('''
 #ifdef __cplusplus
 extern "C"
 #endif
 char dlopen(void);
 int main(void) {
-	return dlopen();
+  return dlopen();
 }
 '''))
 endif
 
 dld_lib = cc.find_library('dld', required: false)
 if dld_lib.found()
-	cfg.set('HAVE_LIBDLD', cc.links('''
+  cfg.set('HAVE_LIBDLD', cc.links('''
 #ifdef __cplusplus
 extern "C"
 #endif
 char shl_load(void);
 int main(void) {
-	return shl_load();
+  return shl_load();
 }
 '''))
 endif
@@ -454,13 +454,13 @@ endif
 have_uuid = cc.has_header('uuid.h') or uuid_dep.found()
 cfg.set('HAVE_UUID_H', have_uuid)
 if have_uuid
-	cfg.set('HAVE_UUID_GENERATE_TIME_SAFE', cc.links('''
+  cfg.set('HAVE_UUID_GENERATE_TIME_SAFE', cc.links('''
 #ifdef __cplusplus
 extern "C"
 #endif
 char uuid_generate_time_safe(void);
 int main(void) {
-	return uuid_generate_time_safe();
+  return uuid_generate_time_safe();
 }
 ''', dependencies: uuid_dep))
 endif
@@ -472,119 +472,119 @@ extern "C"
 #endif
 char textdomain(void);
 int main(void) {
-	return textdomain();
+  return textdomain();
 }
 ''', dependencies: intl_lib))
 
 if meson.can_run_host_binaries()
-	cfg.set('Py_HAVE_C_COMPLEX', cc.run('''
+  cfg.set('Py_HAVE_C_COMPLEX', cc.run('''
 #include <complex.h>
 #define test(type, out) {                              \
-	type complex z = 1 + 2*I; z = z*z;                 \
-	(out) = (out) || creal(z) != -3 || cimag(z) != 4;  \
+  type complex z = 1 + 2*I; z = z*z;                 \
+  (out) = (out) || creal(z) != -3 || cimag(z) != 4;  \
 }
 int main(void) {
-	int res = 0;
-	test(float, res);
-	test(double, res);
-	test(long double, res);
-	return res;
+  int res = 0;
+  test(float, res);
+  test(double, res);
+  test(long double, res);
+  return res;
 }
 ''').returncode() == 0)
 else
-	cfg.set('Py_HAVE_C_COMPLEX', false)
+  cfg.set('Py_HAVE_C_COMPLEX', false)
 endif
 
 if meson.can_run_host_binaries()
-	cfg.set('HAVE_ALIGNED_REQUIRED', cc.run('''
+  cfg.set('HAVE_ALIGNED_REQUIRED', cc.run('''
 int main(void) {
-	char s[16];
-	int i, *p1, *p2;
-	for (i=0; i < 16; i++)
-		s[i] = i;
-	p1 = (int*)(s+1);
-	p2 = (int*)(s+2);
-	if (*p1 == *p2)
-		return 1;
-	return 0;
+  char s[16];
+  int i, *p1, *p2;
+  for (i=0; i < 16; i++)
+    s[i] = i;
+  p1 = (int*)(s+1);
+  p2 = (int*)(s+2);
+  if (*p1 == *p2)
+    return 1;
+  return 0;
 }
 ''').returncode() != 0)
 else
-	cfg.set('HAVE_ALIGNED_REQUIRED', host_machine.system() != 'android')
+  cfg.set('HAVE_ALIGNED_REQUIRED', host_machine.system() != 'android')
 endif
 
 hash_algos = { 'siphash13': 3, 'siphash24': 1, 'fnv': 2, 'auto': false }
 cfg.set('Py_HASH_ALGORITHM', hash_algos[get_option('hash-algorithm')])
 
 if ffi_dep.found()
-	if ffi_dep.type_name() == 'internal'
-		# We can't evaluate a library that hasn't been built yet, just assume its new enough
-		cfg.set('HAVE_FFI_PREP_CIF_VAR', 1)
-		cfg.set('HAVE_FFI_PREP_CLOSURE_LOC', 1)
-		cfg.set('HAVE_FFI_CLOSURE_ALLOC', 1)
-		cfg.set('Py_FFI_SUPPORT_C_COMPLEX', true)
-	else
-		cfg.set('HAVE_FFI_PREP_CIF_VAR', cc.has_function('ffi_prep_cif_var', prefix: '#include <ffi.h>', dependencies: ffi_dep) ? 1 : 0)
-		cfg.set('HAVE_FFI_PREP_CLOSURE_LOC', cc.has_function('ffi_prep_closure_loc', prefix: '#include <ffi.h>', dependencies: ffi_dep) ? 1 : 0)
-		cfg.set('HAVE_FFI_CLOSURE_ALLOC', cc.has_function('ffi_closure_alloc', prefix: '#include <ffi.h>', dependencies: ffi_dep) ? 1 : 0)
+  if ffi_dep.type_name() == 'internal'
+    # We can't evaluate a library that hasn't been built yet, just assume its new enough
+    cfg.set('HAVE_FFI_PREP_CIF_VAR', 1)
+    cfg.set('HAVE_FFI_PREP_CLOSURE_LOC', 1)
+    cfg.set('HAVE_FFI_CLOSURE_ALLOC', 1)
+    cfg.set('Py_FFI_SUPPORT_C_COMPLEX', true)
+  else
+    cfg.set('HAVE_FFI_PREP_CIF_VAR', cc.has_function('ffi_prep_cif_var', prefix: '#include <ffi.h>', dependencies: ffi_dep) ? 1 : 0)
+    cfg.set('HAVE_FFI_PREP_CLOSURE_LOC', cc.has_function('ffi_prep_closure_loc', prefix: '#include <ffi.h>', dependencies: ffi_dep) ? 1 : 0)
+    cfg.set('HAVE_FFI_CLOSURE_ALLOC', cc.has_function('ffi_closure_alloc', prefix: '#include <ffi.h>', dependencies: ffi_dep) ? 1 : 0)
 
-		# Check for libffi with real complex double support.
-		# # This is a workaround, since FFI_TARGET_HAS_COMPLEX_TYPE was defined in libffi v3.2.1,
-		# # but real support was provided only in libffi v3.3.0.
-		# # See https://github.com/python/cpython/issues/125206 for more details.
-		if meson.can_run_host_binaries()
-			cfg.set('Py_FFI_SUPPORT_C_COMPLEX', cc.run('''
+    # Check for libffi with real complex double support.
+    # # This is a workaround, since FFI_TARGET_HAS_COMPLEX_TYPE was defined in libffi v3.2.1,
+    # # but real support was provided only in libffi v3.3.0.
+    # # See https://github.com/python/cpython/issues/125206 for more details.
+    if meson.can_run_host_binaries()
+      cfg.set('Py_FFI_SUPPORT_C_COMPLEX', cc.run('''
 #include <complex.h>
 #include <ffi.h>
 int z_is_expected(double complex z) {
-	const double complex expected = CMPLX(1.25, -0.5);
-	return z == expected;
+  const double complex expected = CMPLX(1.25, -0.5);
+  return z == expected;
 }
 int main(void) {
-	double complex z = 1.25 - 0.5 * I;
-	ffi_type *args[1] = {&ffi_type_complex_double};
-	void *values[1] = {&z};
-	ffi_cif cif;
-	if (ffi_prep_cif(&cif, FFI_DEFAULT_ABI, 1,
-	    &ffi_type_sint, args) != FFI_OK)
-	{
-		return 2;
-	}
-	ffi_arg rc;
-	ffi_call(&cif, FFI_FN(z_is_expected), &rc, values);
-	return !rc;
+  double complex z = 1.25 - 0.5 * I;
+  ffi_type *args[1] = {&ffi_type_complex_double};
+  void *values[1] = {&z};
+  ffi_cif cif;
+  if (ffi_prep_cif(&cif, FFI_DEFAULT_ABI, 1,
+      &ffi_type_sint, args) != FFI_OK)
+  {
+    return 2;
+  }
+  ffi_arg rc;
+  ffi_call(&cif, FFI_FN(z_is_expected), &rc, values);
+  return !rc;
 }
 ''', dependencies: ffi_dep).returncode() == 0)
-		else
-			cfg.set('Py_FFI_SUPPORT_C_COMPLEX', false)
-		endif
-	endif
+    else
+      cfg.set('Py_FFI_SUPPORT_C_COMPLEX', false)
+    endif
+  endif
 endif
 
 cfg.set('WITH_DECIMAL_CONTEXTVAR', get_option('decimal-contextvar')) 
 
 if sqlite3_dep.found() and cc.has_header('sqlite3.h', dependencies: sqlite3_dep)
-	needed_funcs = [ 'sqlite3_bind_double', 'sqlite3_column_decltype', 'sqlite3_column_double', 'sqlite3_complete', 'sqlite3_progress_handler', 'sqlite3_result_double', 'sqlite3_set_authorizer', 'sqlite3_trace_v2', 'sqlite3_value_double' ]
-	have_sqlite3 = true
-	foreach func : needed_funcs
-		if not cc.has_function(func, prefix: '#include <sqlite3.h>', dependencies: sqlite3_dep)
-			have_sqlite3 = false
-			break
-		endif
-	endforeach
-	cfg.set('HAVE_LIBSQLITE3', have_sqlite3)
-	cfg.set('PY_SQLITE_HAVE_SERIALIZE', cc.has_function('sqlite3_serialize', prefix: '#include <sqlite3.h>', dependencies: sqlite3_dep))
-	cfg.set('PY_SQLITE_ENABLE_LOAD_EXTENSION', cc.has_function('sqlite3_load_extension', prefix: '#include <sqlite3.h>', dependencies: sqlite3_dep, required: get_option('loadable-sqlite-extensions')))
+  needed_funcs = [ 'sqlite3_bind_double', 'sqlite3_column_decltype', 'sqlite3_column_double', 'sqlite3_complete', 'sqlite3_progress_handler', 'sqlite3_result_double', 'sqlite3_set_authorizer', 'sqlite3_trace_v2', 'sqlite3_value_double' ]
+  have_sqlite3 = true
+  foreach func : needed_funcs
+    if not cc.has_function(func, prefix: '#include <sqlite3.h>', dependencies: sqlite3_dep)
+      have_sqlite3 = false
+      break
+    endif
+  endforeach
+  cfg.set('HAVE_LIBSQLITE3', have_sqlite3)
+  cfg.set('PY_SQLITE_HAVE_SERIALIZE', cc.has_function('sqlite3_serialize', prefix: '#include <sqlite3.h>', dependencies: sqlite3_dep))
+  cfg.set('PY_SQLITE_ENABLE_LOAD_EXTENSION', cc.has_function('sqlite3_load_extension', prefix: '#include <sqlite3.h>', dependencies: sqlite3_dep, required: get_option('loadable-sqlite-extensions')))
 endif
 
 if libgdbm_dep.found()
-	cfg.set('HAVE_GDBM_H', cc.has_header('gdbm.h', dependencies: libgdbm_dep))
+  cfg.set('HAVE_GDBM_H', cc.has_header('gdbm.h', dependencies: libgdbm_dep))
 endif
 if libdbm_dep.found()
-	cfg.set('HAVE_NDBM_H', cc.has_header('ndbm.h', dependencies: libdbm_dep))
-	cfg.set('HAVE_GDBM_NDBM_H', cc.has_header('gdbm/ndbm.h', dependencies: libdbm_dep))
-	cfg.set('HAVE_GDBM_DASH_NDBM_H', cc.has_header('gdbm-ndbm.h', dependencies: libdbm_dep))
-	cfg.set('HAVE_DB_H', cc.has_header('db.h', dependencies: libdbm_dep))
+  cfg.set('HAVE_NDBM_H', cc.has_header('ndbm.h', dependencies: libdbm_dep))
+  cfg.set('HAVE_GDBM_NDBM_H', cc.has_header('gdbm/ndbm.h', dependencies: libdbm_dep))
+  cfg.set('HAVE_GDBM_DASH_NDBM_H', cc.has_header('gdbm-ndbm.h', dependencies: libdbm_dep))
+  cfg.set('HAVE_DB_H', cc.has_header('db.h', dependencies: libdbm_dep))
 endif
 
 
@@ -593,13 +593,13 @@ cfg.set('PTHREAD_SYSTEM_SCHED_SUPPORTED', true) # TODO
 have_sigmask = cc.has_function('pthread_sigmask', prefix: '#include <pthread.h>\n#include <signal.h>', args: feature_flags)
 cfg.set('HAVE_PTHREAD_SIGMASK', have_sigmask)
 if have_sigmask and host_machine.system() == 'cygwin'
-	cfg.set('HAVE_BROKEN_PTHREAD_SIGMASK', true)
+  cfg.set('HAVE_BROKEN_PTHREAD_SIGMASK', true)
 endif
 cfg.set('HAVE_PTHREAD_GETCPUCLOCKID', cc.has_function('pthread_getcpuclockid', prefix: '#include <pthread.h>', args: feature_flags))
 
 cfg.set('ENABLE_IPV6',
-	cc.has_define('AF_INET6', prefix: '#include <sys/types.h>\n#include <sys/socket.h>') and # required in has_define would be nice
-	cc.has_member('struct sockaddr_in6', 'sin6_scope_id', prefix: '#include <sys/types.h>\n#include <netinet/in.h>', required: get_option('ipv6'))
+  cc.has_define('AF_INET6', prefix: '#include <sys/types.h>\n#include <sys/socket.h>') and # required in has_define would be nice
+  cc.has_member('struct sockaddr_in6', 'sin6_scope_id', prefix: '#include <sys/types.h>\n#include <netinet/in.h>', required: get_option('ipv6'))
 )
 cfg.set('HAVE_LINUX_CAN_RAW_FD_FRAMES', cc.has_header_symbol('linux/can/raw.h', 'CAN_RAW_FD_FRAMES'))
 cfg.set('HAVE_LINUX_CAN_RAW_JOIN_FILTERS', cc.has_header_symbol('linux/can/raw.h', 'CAN_RAW_JOIN_FILTERS'))
@@ -611,19 +611,19 @@ cfg.set('HAVE_STD_ATOMIC', cc.links('''
 atomic_int int_var;
 atomic_uintptr_t uintptr_var;
 int main(void) {
-	atomic_store_explicit(&int_var, 5, memory_order_relaxed);
-	atomic_store_explicit(&uintptr_var, 0, memory_order_relaxed);
-	int loaded_value = atomic_load_explicit(&int_var, memory_order_seq_cst);
-	return 0;
+  atomic_store_explicit(&int_var, 5, memory_order_relaxed);
+  atomic_store_explicit(&uintptr_var, 0, memory_order_relaxed);
+  int loaded_value = atomic_load_explicit(&int_var, memory_order_seq_cst);
+  return 0;
 }
 '''))
 
 cfg.set('HAVE_BUILTIN_ATOMIC', cc.links('''
 int val;
 int main(void) {
-	__atomic_store_n(&val, 1, __ATOMIC_SEQ_CST);
-	(void)__atomic_load_n(&val, __ATOMIC_SEQ_CST);
-	return 0;
+  __atomic_store_n(&val, 1, __ATOMIC_SEQ_CST);
+  (void)__atomic_load_n(&val, __ATOMIC_SEQ_CST);
+  return 0;
 }
 '''))
 
@@ -858,7 +858,7 @@ cfg.set('HAVE_GETPAGESIZE', cc.has_function('getpagesize'))
 cfg.set('HAVE_BROKEN_UNSETENV', not cc.compiles('''
 #include <stdlib.h>
 int main(void) {
-	return unsetenv("DUMMY");
+  return unsetenv("DUMMY");
 }
 ''', args: feature_flags))
 cfg.set('HAVE_CHFLAGS', cc.has_function('chflags'))
@@ -866,7 +866,7 @@ cfg.set('HAVE_LCHFLAGS', cc.has_function('lchflags'))
 
 cfg.set('HAVE_ZLIB_H', zlib_dep.found())
 if zlib_dep.found()
-	cfg.set('HAVE_ZLIB_COPY', cc.has_function('inflateCopy', prefix: '#include <zlib.h>', dependencies: zlib_dep))
+  cfg.set('HAVE_ZLIB_COPY', cc.has_function('inflateCopy', prefix: '#include <zlib.h>', dependencies: zlib_dep))
 endif
 cfg.set('HAVE_BZLIB_H', bzip_dep.found())
 cfg.set('HAVE_LZMA_H', lzma_dep.found())
@@ -968,7 +968,7 @@ cfg.set('HAVE_SOCKADDR_ALG', cc.has_type('struct sockaddr_alg', prefix: socket_p
 cfg.set('HAVE_PROTOTYPES', cc.compiles('''
 int foo(int x) { return 0; }
 int main(void) {
-	return foo(10);
+  return foo(10);
 }
 '''))
 cfg.set('HAVE_SOCKETPAIR', cc.has_function('socketpair', prefix: socket_prefix))
@@ -979,115 +979,115 @@ cfg.set('HAVE_GETHOSTBYNAME_R_6_ARG', cc.compiles('''
 #include <netdb.h>
 
 int main(void) {
-	char *name;
-	struct hostent *he, *res;
-	char buffer[2048];
-	int buflen = 2048;
-	int h_errnop;
-	(void) gethostbyname_r(name, he, buffer, buflen, &res, &h_errnop);
-	return 0;
+  char *name;
+  struct hostent *he, *res;
+  char buffer[2048];
+  int buflen = 2048;
+  int h_errnop;
+  (void) gethostbyname_r(name, he, buffer, buflen, &res, &h_errnop);
+  return 0;
 }
 ''', args: feature_flags))
 cfg.set('HAVE_GETHOSTBYNAME_R_5_ARG', cc.compiles('''
 #include <netdb.h>
 
 int main(void) {
-	char *name;
-	struct hostent *he;
-	char buffer[2048];
-	int buflen = 2048;
-	int h_errnop;
-	(void) gethostbyname_r(name, he, buffer, buflen, &h_errnop);
-	return 0;
+  char *name;
+  struct hostent *he;
+  char buffer[2048];
+  int buflen = 2048;
+  int h_errnop;
+  (void) gethostbyname_r(name, he, buffer, buflen, &h_errnop);
+  return 0;
 }
 ''', args: feature_flags))
 cfg.set('HAVE_GETHOSTBYNAME_R_3_ARG', cc.compiles('''
 #include <netdb.h>
 
 int main(void) {
-	char *name;
-	struct hostent *he;
-	struct hostent_data data;
-	(void) gethostbyname_r(name, he, &data);
-	return 0;
+  char *name;
+  struct hostent *he;
+  struct hostent_data data;
+  (void) gethostbyname_r(name, he, &data);
+  return 0;
 }
 ''', args: feature_flags))
 
 cfg.set('HAVE_GCC_ASM_FOR_X64', cc.links('''
 int main(void) {
-	__asm__ __volatile__ ("movq %rcx, %rax");
-	return 0;
+  __asm__ __volatile__ ("movq %rcx, %rax");
+  return 0;
 }
 '''))
 
 # TODO: this doesn't actually work when you can't run host binaries
 first = cc.compute_int('((unsigned char*)&v)[0]', prefix: 'static const double v = -0.f;')
 if first == 128
-	cfg.set('DOUBLE_IS_BIG_ENDIAN_IEEE754', true)
+  cfg.set('DOUBLE_IS_BIG_ENDIAN_IEEE754', true)
 elif first == 0
-	if host_machine.cpu_family() == 'arm' # is this right?
-		# Some ARM platforms use a mixed-endian representation for
-		# doubles. While Python doesn't currently have full support
-		# for these platforms (see e.g., issue 1762561), we can at
-		# least make sure that float <-> string conversions work.
-		# FLOAT_WORDS_BIGENDIAN doesn't actually detect this case,
-		# but if it's not big or little, then it must be this?
-		cfg.set('DOUBLE_IS_ARM_MIXED_ENDIAN_IEEE754', true)
-	else
-		cfg.set('DOUBLE_IS_LITTLE_ENDIAN_IEEE754', true)
-	endif
+  if host_machine.cpu_family() == 'arm' # is this right?
+    # Some ARM platforms use a mixed-endian representation for
+    # doubles. While Python doesn't currently have full support
+    # for these platforms (see e.g., issue 1762561), we can at
+    # least make sure that float <-> string conversions work.
+    # FLOAT_WORDS_BIGENDIAN doesn't actually detect this case,
+    # but if it's not big or little, then it must be this?
+    cfg.set('DOUBLE_IS_ARM_MIXED_ENDIAN_IEEE754', true)
+  else
+    cfg.set('DOUBLE_IS_LITTLE_ENDIAN_IEEE754', true)
+  endif
 elif first == -1
-	warning('Unable to test double endianness, assuming same as int')
-	if host_machine.endian() == 'big'
-		cfg.set('DOUBLE_IS_BIG_ENDIAN_IEEE754', true)
-	elif host_machine.endian() == 'little'
-		cfg.set('DOUBLE_IS_LITTLE_ENDIAN_IEEE754', true)
-	endif
+  warning('Unable to test double endianness, assuming same as int')
+  if host_machine.endian() == 'big'
+    cfg.set('DOUBLE_IS_BIG_ENDIAN_IEEE754', true)
+  elif host_machine.endian() == 'little'
+    cfg.set('DOUBLE_IS_LITTLE_ENDIAN_IEEE754', true)
+  endif
 else
-	error('Unknown floating point format')
+  error('Unknown floating point format')
 endif
 
 have_gcc_asm_for_x87 = cc.links('''
 int main(void) {
-	unsigned short cw;
-	__asm__ __volatile__ ("fnstcw %0" : "=m" (cw));
-	__asm__ __volatile__ ("fldcw %0" : : "m" (cw));
-	return 0;
+  unsigned short cw;
+  __asm__ __volatile__ ("fnstcw %0" : "=m" (cw));
+  __asm__ __volatile__ ("fldcw %0" : : "m" (cw));
+  return 0;
 }
 ''')
 cfg.set('HAVE_GCC_ASM_FOR_X87', have_gcc_asm_for_x87)
 cfg.set('HAVE_GCC_ASM_FOR_MC68881', cc.links('''
 int main(void) {
-	unsigned int fpcr;
-	__asm__ __volatile__ ("fmove.l %%fpcr,%0" : "=g" (fpcr));
-	__asm__ __volatile__ ("fmove.l %0,%%fpcr" : : "g" (fpcr));
-	return 0;
+  unsigned int fpcr;
+  __asm__ __volatile__ ("fmove.l %%fpcr,%0" : "=g" (fpcr));
+  __asm__ __volatile__ ("fmove.l %0,%%fpcr" : : "g" (fpcr));
+  return 0;
 }
 '''))
 
 if meson.can_run_host_binaries()
-	cfg.set('X87_DOUBLE_ROUNDING', cc.run('''
+  cfg.set('X87_DOUBLE_ROUNDING', cc.run('''
 #include <stdlib.h>
 #include <math.h>
 int main(void) {
-	volatile double x, y, z;
-	/* 1./(1-2**-53) -> 1+2**-52 (correct), 1.0 (double rounding) */
-	x = 0.99999999999999989; /* 1-2**-53 */
-	y = 1./x;
-	if (y != 1.)
-		exit(0);
-	/* 1e16+2.99999 -> 1e16+2. (correct), 1e16+4. (double rounding) */
-	x = 1e16;
-	y = 2.99999;
-	z = x + y;
-	if (z != 1e16+4.)
-		exit(0);
-	/* both tests show evidence of double rounding */
-	exit(1);
+  volatile double x, y, z;
+  /* 1./(1-2**-53) -> 1+2**-52 (correct), 1.0 (double rounding) */
+  x = 0.99999999999999989; /* 1-2**-53 */
+  y = 1./x;
+  if (y != 1.)
+    exit(0);
+  /* 1e16+2.99999 -> 1e16+2. (correct), 1e16+4. (double rounding) */
+  x = 1e16;
+  y = 2.99999;
+  z = x + y;
+  if (z != 1e16+4.)
+    exit(0);
+  /* both tests show evidence of double rounding */
+  exit(1);
 }
 ''').returncode() != 0)
 else
-	cfg.set('X87_DOUBLE_ROUNDING', false)
+  cfg.set('X87_DOUBLE_ROUNDING', false)
 endif
 
 cfg.set('HAVE_ACOSH', cc.has_function('acosh'))
@@ -1100,7 +1100,7 @@ cfg.set('HAVE_LOG1P', cc.has_function('log1p'))
 cfg.set('HAVE_LOG2', cc.has_function('log2'))
 
 if not meson.is_cross_build()
-	cfg.set('POSIX_SEMAPHORES_NOT_ENABLED', cc.run('''
+  cfg.set('POSIX_SEMAPHORES_NOT_ENABLED', cc.run('''
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -1108,18 +1108,18 @@ if not meson.is_cross_build()
 #include <sys/stat.h>
 
 int main(void) {
-	sem_t *a = sem_open("/autoconf", O_CREAT, S_IRUSR|S_IWUSR, 0);
-	if (a == SEM_FAILED) {
-		perror("sem_open");
-		return 1;
-	}
-	sem_close(a);
-	sem_unlink("/autoconf");
-	return 0;
+  sem_t *a = sem_open("/autoconf", O_CREAT, S_IRUSR|S_IWUSR, 0);
+  if (a == SEM_FAILED) {
+    perror("sem_open");
+    return 1;
+  }
+  sem_close(a);
+  sem_unlink("/autoconf");
+  return 0;
 }
 ''').returncode() != 0)
 
-	cfg.set('HAVE_BROKEN_SEM_GETVALUE', (cc.run('''
+  cfg.set('HAVE_BROKEN_SEM_GETVALUE', (cc.run('''
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -1127,22 +1127,22 @@ int main(void) {
 #include <sys/stat.h>
 
 int main(void){
-	sem_t *a = sem_open("/autocftw", O_CREAT, S_IRUSR|S_IWUSR, 0);
-	int count;
-	int res;
-	if(a==SEM_FAILED){
-		perror("sem_open");
-		return 1;
-	}
-	res = sem_getvalue(a, &count);
-	sem_close(a);
-	sem_unlink("/autocftw");
-	return res==-1 ? 1 : 0;
+  sem_t *a = sem_open("/autocftw", O_CREAT, S_IRUSR|S_IWUSR, 0);
+  int count;
+  int res;
+  if(a==SEM_FAILED){
+    perror("sem_open");
+    return 1;
+  }
+  res = sem_getvalue(a, &count);
+  sem_close(a);
+  sem_unlink("/autocftw");
+  return res==-1 ? 1 : 0;
 }
 ''').returncode() != 0) ? 1 : false)
 else
-	cfg.set('POSIX_SEMAPHORES_NOT_ENABLED', false)
-	cfg.set('HAVE_BROKEN_SEM_GETVALUE', 1)
+  cfg.set('POSIX_SEMAPHORES_NOT_ENABLED', false)
+  cfg.set('HAVE_BROKEN_SEM_GETVALUE', 1)
 endif
 
 cfg.set('HAVE_DECL_RTLD_LAZY', cc.has_define('RTLD_LAZY', prefix: '#include <dlfcn.h>') ? 1 : 0)
@@ -1166,60 +1166,60 @@ cfg.set('HAVE_GETC_UNLOCKED', cc.has_function('getc_unlocked', prefix: '#include
 
 cfg.set('HAVE_READLINE_READLINE_H', readline_dep.found())
 if readline_dep.found()
-	cfg.set('HAVE_RL_COMPLETION_APPEND_CHARACTER', cc.has_header_symbol('readline/readline.h', 'rl_completion_append_character', dependencies: readline_dep))
-	cfg.set('HAVE_RL_COMPLETION_SUPPRESS_APPEND', cc.has_header_symbol('readline/readline.h', 'rl_completion_suppress_append', dependencies: readline_dep))
-	cfg.set('HAVE_RL_PRE_INPUT_HOOK', cc.has_header_symbol('readline/readline.h', 'rl_pre_input_hook', dependencies: readline_dep))
-	cfg.set('HAVE_RL_COMPLETION_DISPLAY_MATCHES_HOOK', cc.has_header_symbol('readline/readline.h', 'rl_completion_display_matches_hook', dependencies: readline_dep))
-	cfg.set('HAVE_RL_RESIZE_TERMINAL', cc.has_header_symbol('readline/readline.h', 'rl_resize_terminal', dependencies: readline_dep))
-	cfg.set('HAVE_RL_COMPLETION_MATCHES', cc.has_header_symbol('readline/readline.h', 'rl_completion_matches', dependencies: readline_dep))
-	cfg.set('HAVE_RL_CATCH_SIGNAL', cc.has_header_symbol('readline/readline.h', 'rl_catch_signals', dependencies: readline_dep))
-	cfg.set('HAVE_RL_APPEND_HISTORY', cc.has_header_symbol('readline/history.h', 'append_history', dependencies: readline_dep))
-	cfg.set('HAVE_RL_COMPDISP_FUNC_T', cc.has_type('rl_compdisp_func_t', prefix: '#include <readline/readline.h>', dependencies: readline_dep))
-	cfg.set('Py_RL_STARTUP_HOOK_TAKES_ARGS', cc.compiles('''
+  cfg.set('HAVE_RL_COMPLETION_APPEND_CHARACTER', cc.has_header_symbol('readline/readline.h', 'rl_completion_append_character', dependencies: readline_dep))
+  cfg.set('HAVE_RL_COMPLETION_SUPPRESS_APPEND', cc.has_header_symbol('readline/readline.h', 'rl_completion_suppress_append', dependencies: readline_dep))
+  cfg.set('HAVE_RL_PRE_INPUT_HOOK', cc.has_header_symbol('readline/readline.h', 'rl_pre_input_hook', dependencies: readline_dep))
+  cfg.set('HAVE_RL_COMPLETION_DISPLAY_MATCHES_HOOK', cc.has_header_symbol('readline/readline.h', 'rl_completion_display_matches_hook', dependencies: readline_dep))
+  cfg.set('HAVE_RL_RESIZE_TERMINAL', cc.has_header_symbol('readline/readline.h', 'rl_resize_terminal', dependencies: readline_dep))
+  cfg.set('HAVE_RL_COMPLETION_MATCHES', cc.has_header_symbol('readline/readline.h', 'rl_completion_matches', dependencies: readline_dep))
+  cfg.set('HAVE_RL_CATCH_SIGNAL', cc.has_header_symbol('readline/readline.h', 'rl_catch_signals', dependencies: readline_dep))
+  cfg.set('HAVE_RL_APPEND_HISTORY', cc.has_header_symbol('readline/history.h', 'append_history', dependencies: readline_dep))
+  cfg.set('HAVE_RL_COMPDISP_FUNC_T', cc.has_type('rl_compdisp_func_t', prefix: '#include <readline/readline.h>', dependencies: readline_dep))
+  cfg.set('Py_RL_STARTUP_HOOK_TAKES_ARGS', cc.compiles('''
 #include <stdio.h> /* Must be first for Gnu Readline */
 #include <readline/readline.h>
 #include <readline/history.h>
 
 extern int test_hook_func(const char *text, int state);
 int main(void) {
-	rl_startup_hook=test_hook_func;
-	return 0;
+  rl_startup_hook=test_hook_func;
+  return 0;
 }
 ''', dependencies: readline_dep))
 endif
 
 if not meson.is_cross_build()
-	cfg.set('HAVE_BROKEN_NICE', cc.run('''
+  cfg.set('HAVE_BROKEN_NICE', cc.run('''
 #include <stdlib.h>
 #include <unistd.h>
 int main(void) {
-	int val1 = nice(1);
-	if (val1 != -1 && val1 == nice(2))
-		exit(0);
-	exit(1);
+  int val1 = nice(1);
+  if (val1 != -1 && val1 == nice(2))
+    exit(0);
+  exit(1);
 }
 ''', args: feature_flags).returncode() == 0)
 
-	cfg.set('HAVE_BROKEN_POLL', cc.run('''
+  cfg.set('HAVE_BROKEN_POLL', cc.run('''
 #include <poll.h>
 #include <unistd.h>
 int main(void) {
-	struct pollfd poll_struct = { 42, POLLIN|POLLPRI|POLLOUT, 0 };
-	int poll_test;
+  struct pollfd poll_struct = { 42, POLLIN|POLLPRI|POLLOUT, 0 };
+  int poll_test;
 
-	close (42);
+  close (42);
 
-	poll_test = poll(&poll_struct, 1, 0);
-	if (poll_test < 0)
-		return 0;
-	else if (poll_test == 0 && poll_struct.revents != POLLNVAL)
-		return 0;
-	else
-		return 1;
+  poll_test = poll(&poll_struct, 1, 0);
+  if (poll_test < 0)
+    return 0;
+  else if (poll_test == 0 && poll_struct.revents != POLLNVAL)
+    return 0;
+  else
+    return 1;
 }
 ''').returncode() == 0)
 
-	cfg.set('HAVE_WORKING_TZSET', cc.run('''
+  cfg.set('HAVE_WORKING_TZSET', cc.run('''
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
@@ -1230,209 +1230,209 @@ extern char *tzname[];
 
 int main(void)
 {
-	/* Note that we need to ensure that not only does tzset(3)
-	   do 'something' with localtime, but it works as documented
-	   in the library reference and as expected by the test suite.
-	   This includes making sure that tzname is set properly if
-	   tm->tm_zone does not exist since it is the alternative way
-	   of getting timezone info.
+  /* Note that we need to ensure that not only does tzset(3)
+     do 'something' with localtime, but it works as documented
+     in the library reference and as expected by the test suite.
+     This includes making sure that tzname is set properly if
+     tm->tm_zone does not exist since it is the alternative way
+     of getting timezone info.
 
-	   Red Hat 6.2 doesn't understand the southern hemisphere
-	   after New Year's Day.
-	*/
+     Red Hat 6.2 doesn't understand the southern hemisphere
+     after New Year's Day.
+  */
 
-	time_t groundhogday = 1044144000; /* GMT-based */
-	time_t midyear = groundhogday + (365 * 24 * 3600 / 2);
+  time_t groundhogday = 1044144000; /* GMT-based */
+  time_t midyear = groundhogday + (365 * 24 * 3600 / 2);
 
-	putenv("TZ=UTC+0");
-	tzset();
-	if (localtime(&groundhogday)->tm_hour != 0)
-		exit(1);
+  putenv("TZ=UTC+0");
+  tzset();
+  if (localtime(&groundhogday)->tm_hour != 0)
+    exit(1);
 #if @0@
-	/* For UTC, tzname[1] is sometimes "", sometimes "   " */
-	if (strcmp(tzname[0], "UTC") ||
-		(tzname[1][0] != 0 && tzname[1][0] != ' '))
-		exit(1);
+  /* For UTC, tzname[1] is sometimes "", sometimes "   " */
+  if (strcmp(tzname[0], "UTC") ||
+    (tzname[1][0] != 0 && tzname[1][0] != ' '))
+    exit(1);
 #endif
 
-	putenv("TZ=EST+5EDT,M4.1.0,M10.5.0");
-	tzset();
-	if (localtime(&groundhogday)->tm_hour != 19)
-		exit(1);
+  putenv("TZ=EST+5EDT,M4.1.0,M10.5.0");
+  tzset();
+  if (localtime(&groundhogday)->tm_hour != 19)
+    exit(1);
 #if @0@
-	if (strcmp(tzname[0], "EST") || strcmp(tzname[1], "EDT"))
-		exit(1);
+  if (strcmp(tzname[0], "EST") || strcmp(tzname[1], "EDT"))
+    exit(1);
 #endif
 
-	putenv("TZ=AEST-10AEDT-11,M10.5.0,M3.5.0");
-	tzset();
-	if (localtime(&groundhogday)->tm_hour != 11)
-		exit(1);
+  putenv("TZ=AEST-10AEDT-11,M10.5.0,M3.5.0");
+  tzset();
+  if (localtime(&groundhogday)->tm_hour != 11)
+    exit(1);
 #if @0@
-	if (strcmp(tzname[0], "AEST") || strcmp(tzname[1], "AEDT"))
-		exit(1);
+  if (strcmp(tzname[0], "AEST") || strcmp(tzname[1], "AEDT"))
+    exit(1);
 #endif
 
 #if @1@
-	if (strcmp(localtime(&groundhogday)->tm_zone, "AEDT"))
-		exit(1);
-	if (strcmp(localtime(&midyear)->tm_zone, "AEST"))
-		exit(1);
+  if (strcmp(localtime(&groundhogday)->tm_zone, "AEDT"))
+    exit(1);
+  if (strcmp(localtime(&midyear)->tm_zone, "AEST"))
+    exit(1);
 #endif
 
-	exit(0);
+  exit(0);
 }
 '''.format(have_tzname ? 1 : 0, have_struct_tm_tm_zone ? 1 : 0), args: feature_flags).returncode() == 0)
 else
-	cfg.set('HAVE_BROKEN_NICE', false)
-	cfg.set('HAVE_BROKEN_POLL', false)
-	cfg.set('HAVE_WORKING_TZSET', false)
+  cfg.set('HAVE_BROKEN_NICE', false)
+  cfg.set('HAVE_BROKEN_POLL', false)
+  cfg.set('HAVE_WORKING_TZSET', false)
 endif
 
 cfg.set('HAVE_STAT_TV_NSEC', cc.has_member('struct stat', 'st_mtim.tv_nsec', prefix: '#include <sys/stat.h>', args: feature_flags))
 cfg.set('HAVE_STAT_TV_NSEC2', cc.has_member('struct stat', 'st_mtimespec.tv_nsec', prefix: '#include <sys/stat.h>', args: feature_flags))
 
 if meson.can_run_host_binaries()
-	cfg.set('Py_NORMALIZE_CENTURY', cc.run('''
+  cfg.set('Py_NORMALIZE_CENTURY', cc.run('''
 #include <time.h>
 #include <string.h>
 
 int main(void) {
-	char year[5];
-	struct tm date = {
-		.tm_year = -1801,
-		.tm_mon = 0,
-		.tm_mday = 1
-	};
-	if (strftime(year, sizeof(year), "%Y", &date) && !strcmp(year, "0099"))
-		return 1;
-	return 0;
+  char year[5];
+  struct tm date = {
+    .tm_year = -1801,
+    .tm_mon = 0,
+    .tm_mday = 1
+  };
+  if (strftime(year, sizeof(year), "%Y", &date) && !strcmp(year, "0099"))
+    return 1;
+  return 0;
 }
 ''').returncode() == 0)
 else
-	cfg.set('Py_NORMALIZE_CENTURY', true)
+  cfg.set('Py_NORMALIZE_CENTURY', true)
 endif
 
 if ncurses_dep.found()
-	cfg.set('HAVE_NCURSESW', have_ncursesw)
-	cfg.set('HAVE_PANELW', have_panelw)
-	cfg.set('HAVE_NCURSES', not have_ncursesw)
-	cfg.set('HAVE_PANEL', not have_panelw)
+  cfg.set('HAVE_NCURSESW', have_ncursesw)
+  cfg.set('HAVE_PANELW', have_panelw)
+  cfg.set('HAVE_NCURSES', not have_ncursesw)
+  cfg.set('HAVE_PANEL', not have_panelw)
 
-	cfg.set('HAVE_NCURSESW_CURSES_H', cc.has_header('ncursesw/curses.h', dependencies: ncurses_dep))
-	cfg.set('HAVE_NCURSESW_NCURSES_H', cc.has_header('ncursesw/ncurses.h', dependencies: ncurses_dep))
-	cfg.set('HAVE_NCURSESW_PANEL_H', cc.has_header('ncursesw/panel.h', dependencies: ncurses_dep))
+  cfg.set('HAVE_NCURSESW_CURSES_H', cc.has_header('ncursesw/curses.h', dependencies: ncurses_dep))
+  cfg.set('HAVE_NCURSESW_NCURSES_H', cc.has_header('ncursesw/ncurses.h', dependencies: ncurses_dep))
+  cfg.set('HAVE_NCURSESW_PANEL_H', cc.has_header('ncursesw/panel.h', dependencies: ncurses_dep))
 
 
-	cfg.set('HAVE_NCURSES_CURSES_H', cc.has_header('ncurses/curses.h', dependencies: ncurses_dep))
-	cfg.set('HAVE_NCURSES_NCURSES_H', cc.has_header('ncurses/ncurses.h', dependencies: ncurses_dep))
-	cfg.set('HAVE_NCURSES_PANEL_H', cc.has_header('ncurses/panel.h', dependencies: ncurses_dep))
+  cfg.set('HAVE_NCURSES_CURSES_H', cc.has_header('ncurses/curses.h', dependencies: ncurses_dep))
+  cfg.set('HAVE_NCURSES_NCURSES_H', cc.has_header('ncurses/ncurses.h', dependencies: ncurses_dep))
+  cfg.set('HAVE_NCURSES_PANEL_H', cc.has_header('ncurses/panel.h', dependencies: ncurses_dep))
 
-	cfg.set('HAVE_CURSES_H', cc.has_header('curses.h', dependencies: ncurses_dep))
-	cfg.set('HAVE_NCURSES_H', cc.has_header('ncurses.h', dependencies: ncurses_dep))
-	cfg.set('HAVE_PANEL_H', cc.has_header('panel.h', dependencies: ncurses_dep))
-	cfg.set('HAVE_TERM_H', cc.has_header('term.h', dependencies: ncurses_dep))
+  cfg.set('HAVE_CURSES_H', cc.has_header('curses.h', dependencies: ncurses_dep))
+  cfg.set('HAVE_NCURSES_H', cc.has_header('ncurses.h', dependencies: ncurses_dep))
+  cfg.set('HAVE_PANEL_H', cc.has_header('panel.h', dependencies: ncurses_dep))
+  cfg.set('HAVE_TERM_H', cc.has_header('term.h', dependencies: ncurses_dep))
 
-	# TODO
-	cfg.set('MVWDELCH_IS_EXPRESSION', true)
-	cfg.set('WINDOW_HAS_FLAGS', false)
-	cfg.set('HAVE_CURSES_IS_PAD', true)
-	cfg.set('HAVE_CURSES_IS_TERM_RESIZED', true)
-	cfg.set('HAVE_CURSES_RESIZE_TERM', true)
-	cfg.set('HAVE_CURSES_RESIZETERM', true)
-	cfg.set('HAVE_CURSES_IMMEDOK', true)
-	cfg.set('HAVE_CURSES_SYNCOK', true)
-	cfg.set('HAVE_CURSES_WCHGAT', true)
-	cfg.set('HAVE_CURSES_FILTER', true)
-	cfg.set('HAVE_CURSES_HAS_KEY', true)
-	cfg.set('HAVE_CURSES_TYPEAHEAD', true)
-	cfg.set('HAVE_CURSES_USE_ENV', true)
+  # TODO
+  cfg.set('MVWDELCH_IS_EXPRESSION', true)
+  cfg.set('WINDOW_HAS_FLAGS', false)
+  cfg.set('HAVE_CURSES_IS_PAD', true)
+  cfg.set('HAVE_CURSES_IS_TERM_RESIZED', true)
+  cfg.set('HAVE_CURSES_RESIZE_TERM', true)
+  cfg.set('HAVE_CURSES_RESIZETERM', true)
+  cfg.set('HAVE_CURSES_IMMEDOK', true)
+  cfg.set('HAVE_CURSES_SYNCOK', true)
+  cfg.set('HAVE_CURSES_WCHGAT', true)
+  cfg.set('HAVE_CURSES_FILTER', true)
+  cfg.set('HAVE_CURSES_HAS_KEY', true)
+  cfg.set('HAVE_CURSES_TYPEAHEAD', true)
+  cfg.set('HAVE_CURSES_USE_ENV', true)
 endif
 
 if not meson.is_cross_build()
-	fs = import('fs')
-	cfg.set('HAVE_DEV_PTMX', fs.exists('/dev/ptmx'))
-	cfg.set('HAVE_DEV_PTC', fs.exists('/dev/ptc'))
+  fs = import('fs')
+  cfg.set('HAVE_DEV_PTMX', fs.exists('/dev/ptmx'))
+  cfg.set('HAVE_DEV_PTC', fs.exists('/dev/ptc'))
 else
-	warning('Cannot check for /dev/ptmx when cross compiling')
+  warning('Cannot check for /dev/ptmx when cross compiling')
 endif
 
 have_socklen_t = cc.has_type('socklen_t', prefix: '@0@\n@1@'.format(have_sys_types_h ? '#include <sys/types.h>' : '', have_sys_socket_h ? '#include <sys/socket.h>' : ''))
 cfg.set('HAVE_SOCKLEN_T', have_socklen_t)
 if not have_socklen_t
-	cfg.set('socklen_t', 'int')
+  cfg.set('socklen_t', 'int')
 endif
 
 if meson.can_run_host_binaries()
-	cfg.set('HAVE_BROKEN_MBSTOWCS', cc.run('''
+  cfg.set('HAVE_BROKEN_MBSTOWCS', cc.run('''
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 int main(void) {
-	size_t len = -1;
-	const char *str = "text";
-	len = mbstowcs(NULL, str, 0);
-	return (len != 4);
+  size_t len = -1;
+  const char *str = "text";
+  len = mbstowcs(NULL, str, 0);
+  return (len != 4);
 }
 ''').returncode() != 0)
 else
-	cfg.set('HAVE_BROKEN_MBSTOWCS', false)
+  cfg.set('HAVE_BROKEN_MBSTOWCS', false)
 endif
 
 if meson.can_run_host_binaries()
-	cfg.set('HAVE_COMPUTED_GOTOS', cc.run('''
+  cfg.set('HAVE_COMPUTED_GOTOS', cc.run('''
 int main(int argc, char **argv) {
-	static void *targets[1] = { &&LABEL1 };
-	goto LABEL2;
+  static void *targets[1] = { &&LABEL1 };
+  goto LABEL2;
 LABEL1:
-	return 0;
+  return 0;
 LABEL2:
-	goto *targets[0];
-	return 1;
+  goto *targets[0];
+  return 1;
 }
 ''').returncode() == 0)
 else
-	cfg.set('HAVE_COMPUTED_GOTOS', true) #?
+  cfg.set('HAVE_COMPUTED_GOTOS', true) #?
 endif
 
 cfg.set('Py_TAIL_CALL_INTERP',false) #option?
 
 if meson.can_run_host_binaries()
-	cfg.set('HAVE_GLIBC_MEMMOVE_BUG', cc.run('''
+  cfg.set('HAVE_GLIBC_MEMMOVE_BUG', cc.run('''
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 void foo(void *p, void *q) { memmove(p, q, 19); }
 int main(void) {
-	char a[32] = "123456789000000000";
-	foo(&a[9], a);
-	if (strcmp(a, "123456789123456789000000000") != 0)
-		return 1;
-	foo(a, &a[9]);
-	if (strcmp(a, "123456789000000000") != 0)
-		return 1;
-	return 0;
+  char a[32] = "123456789000000000";
+  foo(&a[9], a);
+  if (strcmp(a, "123456789123456789000000000") != 0)
+    return 1;
+  foo(a, &a[9]);
+  if (strcmp(a, "123456789000000000") != 0)
+    return 1;
+  return 0;
 }
 ''').returncode() != 0)
 
-	if have_gcc_asm_for_x87
-		cfg.set('HAVE_IPA_PURE_CONST_BUG', cc.run('''
+  if have_gcc_asm_for_x87
+    cfg.set('HAVE_IPA_PURE_CONST_BUG', cc.run('''
 __attribute__((noinline)) int foo(int *p) {
-	int r;
-	__asm__ ( "movl $6, (%1)\n\t"
-	          "xorl %0, %0\n\t"
-	          : "=r" (r) : "r" (p) : "memory"
-	);
-	return r;
+  int r;
+  __asm__ ( "movl $6, (%1)\n\t"
+            "xorl %0, %0\n\t"
+            : "=r" (r) : "r" (p) : "memory"
+  );
+  return r;
 }
 int main(void) {
-	int p = 8;
-	if ((foo(&p) ? : p) != 6)
-		return 1;
-	return 0;
+  int p = 8;
+  if ((foo(&p) ? : p) != 6)
+    return 1;
+  return 0;
 }
 ''').returncode() != 0)
-	endif
+  endif
 endif
 
 cfg.set('HAVE_DIRENT_D_TYPE', cc.has_member('struct dirent', 'd_type', prefix: '#include <dirent.h>'))
@@ -1444,12 +1444,12 @@ cfg.set('HAVE_GETRANDOM_SYSCALL', cc.links('''
 #include <linux/random.h>
 
 int main(void) {
-	char buffer[1];
-	const size_t buflen = sizeof(buffer);
-	const int flags = GRND_NONBLOCK;
-	/* ignore the result, Python checks for ENOSYS and EAGAIN at runtime */
-	(void)syscall(SYS_getrandom, buffer, buflen, flags);
-	return 0;
+  char buffer[1];
+  const size_t buflen = sizeof(buffer);
+  const int flags = GRND_NONBLOCK;
+  /* ignore the result, Python checks for ENOSYS and EAGAIN at runtime */
+  (void)syscall(SYS_getrandom, buffer, buflen, flags);
+  return 0;
 }
 ''', args: feature_flags))
 
@@ -1460,10 +1460,10 @@ cfg.set('HAVE_SHM_UNLINK', cc.has_function('shm_unlink', prefix: have_sys_mman_h
 
 py_ssl_cipher_suite_map = { 'python': 1, 'openssl': 2 }
 if get_option('ssl-default-suites') in py_ssl_cipher_suite_map
-	cfg.set('PY_SSL_DEFAULT_CIPHERS', py_ssl_cipher_suite_map[get_option('ssl-default-suites')])
+  cfg.set('PY_SSL_DEFAULT_CIPHERS', py_ssl_cipher_suite_map[get_option('ssl-default-suites')])
 else
-	cfg.set('PY_SSL_DEFAULT_CIPHERS', 0)
-	cfg.set_quoted('PY_SSL_DEFAULT_CIPHER_STRING', get_option('ssl-default-suites'))
+  cfg.set('PY_SSL_DEFAULT_CIPHERS', 0)
+  cfg.set_quoted('PY_SSL_DEFAULT_CIPHER_STRING', get_option('ssl-default-suites'))
 endif
 
 cfg.set_quoted('PY_BUILTIN_HASHLIB_HASHES', ','.join(get_option('builtin-hashlib-hashes')))
@@ -1473,10 +1473,10 @@ cfg.set('_PYTHREAD_NAME_MAXLEN', 15) # TODO
 hacl_can_compile_simd128 = false
 hacl_can_compile_simd256 = false
 if host_machine.system() != 'android' and host_machine.system() != 'wasi'
-	hacl_simd128_args = cc.get_supported_arguments('-msse', '-msse2', '-msse3', '-msse4.1', '-msse4.2')
-	hacl_can_compile_simd128 = hacl_simd128_args.length() > 0
-	hacl_simd256_args = cc.get_supported_arguments('-mavx2')
-	hacl_can_compile_simd256 = hacl_simd256_args.length() > 0
+  hacl_simd128_args = cc.get_supported_arguments('-msse', '-msse2', '-msse3', '-msse4.1', '-msse4.2')
+  hacl_can_compile_simd128 = hacl_simd128_args.length() > 0
+  hacl_simd256_args = cc.get_supported_arguments('-mavx2')
+  hacl_can_compile_simd256 = hacl_simd256_args.length() > 0
 endif
 cfg.set('HACL_CAN_COMPILE_SIMD128', hacl_can_compile_simd128 ? 1 : false)
 cfg.set('HACL_CAN_COMPILE_SIMD256', hacl_can_compile_simd256 ? 1 : false)
@@ -1484,10 +1484,10 @@ cfg.set('HACL_CAN_COMPILE_SIMD256', hacl_can_compile_simd256 ? 1 : false)
 pyconfig = configure_file(output: 'pyconfig.h', configuration: cfg)
 
 if not libmpdec_dep.found()
-	subdir('Modules/_decimal/libmpdec')
+  subdir('Modules/_decimal/libmpdec')
 endif
 if not expat_dep.found()
-	subdir('Modules/expat')
+  subdir('Modules/expat')
 endif
 
 subdir('Include')
@@ -1499,20 +1499,20 @@ subdir('Python/frozen_modules')
 private_inc += include_directories('Python')
 
 libpython_lib = library('python', frozen_tgts, 'Python' / 'frozen.c', 'Modules' / 'getpath.c',
-	c_args: [ '-DPy_BUILD_CORE' ],
-	include_directories: [ inc, private_inc ],
-	link_whole: [ python_objects_lib, python_parser_lib, python_python_lib_omit_frozen ],
-	dependencies: [
-		python_modules_dep,
-		libm_dep,
-		liblog_dep
-	],
-	install: true
+  c_args: [ '-DPy_BUILD_CORE' ],
+  include_directories: [ inc, private_inc ],
+  link_whole: [ python_objects_lib, python_parser_lib, python_python_lib_omit_frozen ],
+  dependencies: [
+    python_modules_dep,
+    libm_dep,
+    liblog_dep
+  ],
+  install: true
 )
 
 libpython_dep = declare_dependency(
-	include_directories: [inc, root_inc],
-	link_with: libpython_lib
+  include_directories: [inc, root_inc],
+  link_with: libpython_lib
 )
 
 # the dynamic modules need libpython

@@ -15,6 +15,7 @@ check_headers = [
   'editline/readline.h',
   'endian.h',
   'errno.h',
+  'execinfo.h',
   'fcntl.h',
   'gdbm/dash/ndbm.h',
   'gdbm.h',
@@ -25,6 +26,7 @@ check_headers = [
   'langinfo.h',
   'libintl.h',
   'libutil.h',
+  'link.h',
   'linux/auxvec.h',
   'linux/can/bcm.h',
   'linux/can.h',
@@ -131,7 +133,9 @@ check_headers = [
   'uuid.h',
   'uuid/uuid.h',
   'wchar.h',
+  'zdict.h',
   'zlib.h',
+  'zstd.h',
 ]
 
 foreach h : check_headers
@@ -150,6 +154,7 @@ check_functions = [
 # check token ['HAVE_ALTZONE']
   ['HAVE_ASINH', 'asinh', '#include<math.h>'],
   ['HAVE_ATANH', 'atanh', '#include<math.h>'],
+# check token ['HAVE_BACKTRACE']
 # check token ['HAVE_BIND']
 # check token ['HAVE_BIND_TEXTDOMAIN_CODESET']
 # check token ['HAVE_BROKEN_MBSTOWCS']
@@ -199,12 +204,14 @@ check_functions = [
 # check token ['HAVE_DECL_RTLD_NOLOAD']
 # check token ['HAVE_DECL_RTLD_NOW']
 # check token ['HAVE_DECL_TZNAME']
+# check token ['HAVE_DECL_UT_NAMESIZE']
 # check token ['HAVE_DEVICE_MACROS']
 # check token ['HAVE_DEV_PTC']
 # check token ['HAVE_DEV_PTMX']
 # check token ['HAVE_DIRENT_D_TYPE']
   ['HAVE_DIRFD', 'dirfd', '#include<dirent.h>'],
 # check token ['HAVE_DLADDR']
+# check token ['HAVE_DLADDR1']
   ['HAVE_DLOPEN', 'dlopen', '#include<dlfcn.h>'],
 # check token ['HAVE_DUP']
   ['HAVE_DUP2', 'dup2', '#include<unistd.h>'],
@@ -277,6 +284,7 @@ check_functions = [
   ['HAVE_GETITIMER', 'getitimer', '#include<sys/time.h>'],
   ['HAVE_GETLOADAVG', 'getloadavg', '#include<stdlib.h>'],
   ['HAVE_GETLOGIN', 'getlogin', '#include<unistd.h>'],
+# check token ['HAVE_GETLOGIN_R']
   ['HAVE_GETNAMEINFO', 'getnameinfo', '#include<netdb.h>'],
   ['HAVE_GETPAGESIZE', 'getpagesize', '#include<unistd.h>'],
   ['HAVE_GETPEERNAME', 'getpeername', '#include<sys/socket.h>'],
@@ -340,6 +348,7 @@ check_functions = [
   ['HAVE_LUTIMES', 'lutimes', '#include<sys/time.h>'],
 # check token ['HAVE_MADVISE']
   ['HAVE_MAKEDEV', 'makedev', '#include<sys/sysmacros.h>'],
+# check token ['HAVE_MAXLOGNAME']
   ['HAVE_MBRTOWC', 'mbrtowc', '#include<wchar.h>'],
 # check token ['HAVE_MEMFD_CREATE']
   ['HAVE_MEMRCHR', 'memrchr', '#include<string.h>'],
@@ -508,9 +517,11 @@ check_functions = [
 # check token ['HAVE_USABLE_WCHAR_T']
   ['HAVE_UTIMENSAT', 'utimensat', '#include<sys/stat.h>'],
   ['HAVE_UTIMES', 'utimes', '#include<sys/time.h>'],
+# check token ['HAVE_UT_NAMESIZE']
 # check token ['HAVE_UUID_CREATE']
 # check token ['HAVE_UUID_ENC_BE']
 # check token ['HAVE_UUID_GENERATE_TIME_SAFE']
+# check token ['HAVE_UUID_GENERATE_TIME_SAFE_STABLE_MAC']
   ['HAVE_VFORK', 'vfork', '#include<unistd.h>'],
 # check token ['HAVE_WAIT']
   ['HAVE_WAIT3', 'wait3', '#include<sys/wait.h>'],

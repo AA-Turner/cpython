@@ -1,7 +1,7 @@
 project('cpython', 'c',
   version: '3.15.0',
   default_options: ['warning_level=1', 'c_std=c11'],
-  meson_version: '>= 1.3.0'
+  meson_version: '>= 1.9.0'
 )
 
 version_components = meson.project_version().split('.')

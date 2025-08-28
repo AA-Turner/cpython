@@ -41,7 +41,7 @@ bootstrap_modules = [
 module_pwd = true #TODO
 if module_pwd
   # for systems without $HOME env, used by site._getuserbase()
-  bootstrap_modules += { 'name': '', 'sources': [ 'pwdmodule.c' ] }
+  bootstrap_modules += { 'name': 'pwd', 'sources': [ 'pwdmodule.c' ] }
 endif
 
 stdlib_modules = [
@@ -91,7 +91,9 @@ stdlib_modules = [
 
   # pyexpat module uses libexpat
   # either static libexpat.a from Modules/expat or libexpat.so with
+  # ./configure --with-system-expat
   { 'name': 'pyexpat', 'sources': files([ 'pyexpat.c' ]), 'deps': [ expat_dep ] },
+
   # _elementtree libexpat via CAPI hook in pyexpat.
   { 'name': '_elementtree', 'sources': files([ '_elementtree.c' ]), 'deps': [ expat_dep.partial_dependency(includes: true) ] },
 

@@ -1501,7 +1501,7 @@ private_inc += include_directories('Python')
 libpython_lib = library('python', frozen_tgts, 'Python' / 'frozen.c', 'Modules' / 'getpath.c',
   c_args: [ '-DPy_BUILD_CORE' ],
   include_directories: [ inc, private_inc ],
-  link_whole: [ python_objects_lib, python_parser_lib, python_python_lib_omit_frozen ],
+  link_whole: [ python_objects_lib, python_parser_lib, python_python_lib_omit_frozen, python_modules_lib ],
   dependencies: [
     python_modules_dep,
     libm_dep,

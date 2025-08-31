@@ -1,5 +1,5 @@
 /* Detect platform triplet from builtin defines
- * cc -E Misc/platform_triplet.c | grep '^PLATFORM_TRIPLET=' | tr -d ' '
+ * cc -E Misc/platform_triplet.c | grep '^#define TRIPLET ' | tr -d ' '
  */
 #undef bfin
 #undef cris
@@ -15,13 +15,13 @@
 
 #if defined(__ANDROID__)
 #  if defined(__x86_64__)
-PLATFORM_TRIPLET=x86_64-linux-android
+#define TRIPLET x86_64-linux-android
 #  elif defined(__i386__)
-PLATFORM_TRIPLET=i686-linux-android
+#define TRIPLET i686-linux-android
 #  elif defined(__aarch64__)
-PLATFORM_TRIPLET=aarch64-linux-android
+#define TRIPLET aarch64-linux-android
 #  elif defined(__arm__)
-PLATFORM_TRIPLET=arm-linux-androideabi
+#define TRIPLET arm-linux-androideabi
 #  else
 #    error unknown Android platform
 #  endif
@@ -139,86 +139,86 @@ PLATFORM_TRIPLET=arm-linux-androideabi
 # endif
 
 # if defined(__x86_64__) && defined(__LP64__)
-PLATFORM_TRIPLET=x86_64-linux-LIBC
+#define TRIPLET x86_64-linux-LIBC
 # elif defined(__x86_64__) && defined(__ILP32__)
-PLATFORM_TRIPLET=x86_64-linux-LIBC_X32
+#define TRIPLET x86_64-linux-LIBC_X32
 # elif defined(__i386__)
-PLATFORM_TRIPLET=i386-linux-LIBC
+#define TRIPLET i386-linux-LIBC
 # elif defined(__aarch64__) && defined(__AARCH64EL__)
 #  if defined(__ILP32__)
-PLATFORM_TRIPLET=aarch64_ilp32-linux-LIBC
+#define TRIPLET aarch64_ilp32-linux-LIBC
 #  else
-PLATFORM_TRIPLET=aarch64-linux-LIBC
+#define TRIPLET aarch64-linux-LIBC
 #  endif
 # elif defined(__aarch64__) && defined(__AARCH64EB__)
 #  if defined(__ILP32__)
-PLATFORM_TRIPLET=aarch64_be_ilp32-linux-LIBC
+#define TRIPLET aarch64_be_ilp32-linux-LIBC
 #  else
-PLATFORM_TRIPLET=aarch64_be-linux-LIBC
+#define TRIPLET aarch64_be-linux-LIBC
 #  endif
 # elif defined(__alpha__)
-PLATFORM_TRIPLET=alpha-linux-LIBC
+#define TRIPLET alpha-linux-LIBC
 # elif defined(__ARM_EABI__)
 #  if defined(__ARMEL__)
-PLATFORM_TRIPLET=arm-linux-LIBC_ARM
+#define TRIPLET arm-linux-LIBC_ARM
 #  else
-PLATFORM_TRIPLET=armeb-linux-LIBC_ARM
+#define TRIPLET armeb-linux-LIBC_ARM
 #  endif
 # elif defined(__hppa__)
-PLATFORM_TRIPLET=hppa-linux-LIBC
+#define TRIPLET hppa-linux-LIBC
 # elif defined(__ia64__)
-PLATFORM_TRIPLET=ia64-linux-LIBC
+#define TRIPLET ia64-linux-LIBC
 # elif defined(__loongarch__) && defined(__loongarch_lp64)
-PLATFORM_TRIPLET=loongarch64-linux-LIBC_LA
+#define TRIPLET loongarch64-linux-LIBC_LA
 # elif defined(__m68k__) && !defined(__mcoldfire__)
-PLATFORM_TRIPLET=m68k-linux-LIBC
+#define TRIPLET m68k-linux-LIBC
 # elif defined(__mips__)
 #  if defined(__mips_isa_rev) && (__mips_isa_rev >=6)
 #   if defined(_MIPSEL) && defined(__mips64)
-PLATFORM_TRIPLET=mipsisa64r6el-linux-LIBC_MIPS
+#define TRIPLET mipsisa64r6el-linux-LIBC_MIPS
 #   elif defined(_MIPSEL)
-PLATFORM_TRIPLET=mipsisa32r6el-linux-LIBC_MIPS
+#define TRIPLET mipsisa32r6el-linux-LIBC_MIPS
 #   elif defined(__mips64)
-PLATFORM_TRIPLET=mipsisa64r6-linux-LIBC_MIPS
+#define TRIPLET mipsisa64r6-linux-LIBC_MIPS
 #   else
-PLATFORM_TRIPLET=mipsisa32r6-linux-LIBC_MIPS
+#define TRIPLET mipsisa32r6-linux-LIBC_MIPS
 #   endif
 #  else
 #   if defined(_MIPSEL) && defined(__mips64)
-PLATFORM_TRIPLET=mips64el-linux-LIBC_MIPS
+#define TRIPLET mips64el-linux-LIBC_MIPS
 #   elif defined(_MIPSEL)
-PLATFORM_TRIPLET=mipsel-linux-LIBC_MIPS
+#define TRIPLET mipsel-linux-LIBC_MIPS
 #   elif defined(__mips64)
-PLATFORM_TRIPLET=mips64-linux-LIBC_MIPS
+#define TRIPLET mips64-linux-LIBC_MIPS
 #   else
-PLATFORM_TRIPLET=mips-linux-LIBC_MIPS
+#define TRIPLET mips-linux-LIBC_MIPS
 #   endif
 #  endif
 # elif defined(__or1k__)
-PLATFORM_TRIPLET=or1k-linux-LIBC
+#define TRIPLET or1k-linux-LIBC
 # elif defined(__powerpc64__)
 #  if defined(__LITTLE_ENDIAN__)
-PLATFORM_TRIPLET=powerpc64le-linux-LIBC
+#define TRIPLET powerpc64le-linux-LIBC
 #  else
-PLATFORM_TRIPLET=powerpc64-linux-LIBC
+#define TRIPLET powerpc64-linux-LIBC
 #  endif
 # elif defined(__powerpc__)
-PLATFORM_TRIPLET=powerpc-linux-LIBC_PPC
+#define TRIPLET powerpc-linux-LIBC_PPC
 # elif defined(__s390x__)
-PLATFORM_TRIPLET=s390x-linux-LIBC
+#define TRIPLET s390x-linux-LIBC
 # elif defined(__s390__)
-PLATFORM_TRIPLET=s390-linux-LIBC
+#define TRIPLET s390-linux-LIBC
 # elif defined(__sh__) && defined(__LITTLE_ENDIAN__)
-PLATFORM_TRIPLET=sh4-linux-LIBC
+#define TRIPLET sh4-linux-LIBC
 # elif defined(__sparc__) && defined(__arch64__)
-PLATFORM_TRIPLET=sparc64-linux-LIBC
+#define TRIPLET sparc64-linux-LIBC
 # elif defined(__sparc__)
-PLATFORM_TRIPLET=sparc-linux-LIBC
+#define TRIPLET sparc-linux-LIBC
 # elif defined(__riscv)
 #  if __riscv_xlen == 32
-PLATFORM_TRIPLET=riscv32-linux-LIBC
+#define TRIPLET riscv32-linux-LIBC
 #  elif __riscv_xlen == 64
-PLATFORM_TRIPLET=riscv64-linux-LIBC
+#define TRIPLET riscv64-linux-LIBC
 #  else
 #   error unknown platform triplet
 #  endif
@@ -230,17 +230,17 @@ PLATFORM_TRIPLET=riscv64-linux-LIBC
  */
 #elif defined(__FreeBSD_kernel__)
 # if defined(__LP64__)
-PLATFORM_TRIPLET=x86_64-kfreebsd-gnu
+#define TRIPLET x86_64-kfreebsd-gnu
 # elif defined(__i386__)
-PLATFORM_TRIPLET=i386-kfreebsd-gnu
+#define TRIPLET i386-kfreebsd-gnu
 # else
 #   error unknown platform triplet
 # endif
 #elif defined(__gnu_hurd__)
 # if defined(__x86_64__) && defined(__LP64__)
-PLATFORM_TRIPLET=x86_64-gnu
+#define TRIPLET x86_64-gnu
 # elif defined(__i386__)
-PLATFORM_TRIPLET=i386-gnu
+#define TRIPLET i386-gnu
 # else
 #   error unknown platform triplet
 # endif
@@ -250,41 +250,43 @@ PLATFORM_TRIPLET=i386-gnu
 #  if defined(TARGET_OS_IOS) && TARGET_OS_IOS
 #    if defined(TARGET_OS_SIMULATOR) && TARGET_OS_SIMULATOR
 #      if __x86_64__
-PLATFORM_TRIPLET=x86_64-iphonesimulator
+#define TRIPLET x86_64-iphonesimulator
 #      else
-PLATFORM_TRIPLET=arm64-iphonesimulator
+#define TRIPLET arm64-iphonesimulator
 #      endif
 #    else
-PLATFORM_TRIPLET=arm64-iphoneos
+#define TRIPLET arm64-iphoneos
 #    endif
 // Older macOS SDKs do not define TARGET_OS_OSX
 #  elif !defined(TARGET_OS_OSX) || TARGET_OS_OSX
-PLATFORM_TRIPLET=darwin
+#define TRIPLET darwin
 #  else
 #    error unknown Apple platform
 #  endif
 #elif defined(__VXWORKS__)
-PLATFORM_TRIPLET=vxworks
+#define TRIPLET vxworks
 #elif defined(__wasm32__)
 #  if defined(__EMSCRIPTEN__)
-PLATFORM_TRIPLET=wasm32-emscripten
+#define TRIPLET wasm32-emscripten
 #  elif defined(__wasi__)
 #    if defined(_REENTRANT)
-PLATFORM_TRIPLET=wasm32-wasi-threads
+#define TRIPLET wasm32-wasi-threads
 #    else
-PLATFORM_TRIPLET=wasm32-wasi
+#define TRIPLET wasm32-wasi
 #    endif
 #  else
 #    error unknown wasm32 platform
 #  endif
 #elif defined(__wasm64__)
 #  if defined(__EMSCRIPTEN__)
-PLATFORM_TRIPLET=wasm64-emscripten
+#define TRIPLET wasm64-emscripten
 #  elif defined(__wasi__)
-PLATFORM_TRIPLET=wasm64-wasi
+#define TRIPLET wasm64-wasi
 #  else
 #    error unknown wasm64 platform
 #  endif
 #else
 # error unknown platform triplet
 #endif
+
+PLATFORM_TRIPLET=TRIPLET

@@ -13,3 +13,6 @@ indent_size = 3
 
 [*.{js,yml,yaml}]
 indent_size = 2
+
+[meson.build]
+indent_size = 2

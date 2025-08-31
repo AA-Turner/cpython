@@ -1,5 +1,13 @@
+option('source_tree',
+       type: 'string',
+       description: 'The location of the source tree',
+       value: '../master',
+)
+
 option('stdlib', type: 'combo', choices: ['auto', 'builtin', 'dynamic'], value: 'auto')
 option('gil', type: 'boolean', value: true)
+# enable building a shared Python library (default is no)
+option('enable-shared', type: 'boolean', value: false)
 
 option('hash-algorithm', type: 'combo', choices: ['auto', 'siphash13', 'siphash24', 'fnv'], value: 'auto')
 
